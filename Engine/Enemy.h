@@ -8,10 +8,10 @@
 #include "Powerup.h"
 #include <vector>
 
-class Enemy
+class Food
 {
 public:
-	Enemy( const Vec2& pos,const Vec2& size,float hp );
+	Food( const Vec2& pos,const Vec2& size,float hp );
 
 	virtual void Update( Random& rng,const Vec2& playerPos,float dt ) = 0;
 	virtual void Draw( Graphics& gfx ) const;
@@ -32,7 +32,7 @@ private:
 
 class Meatball
 	:
-	public Enemy
+	public Food
 {
 public:
 	Meatball( Random& rng,const Vec2& playerPos );
@@ -64,7 +64,7 @@ private:
 
 class Pasta
 	:
-	public Enemy
+	public Food
 {
 public:
 	Pasta( Random& rng );
@@ -81,6 +81,6 @@ private:
 		{
 			Vec2( -s,-s * 2.0f ),Vec2( s,-s * 2.0f ),
 			Vec2( s,s * 2.0f ),Vec2( -s,s * 2.0f )
-		},Colors::Pink
+		},Colors::Magenta
 	};
 };

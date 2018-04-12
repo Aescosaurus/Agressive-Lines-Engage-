@@ -1,7 +1,7 @@
 #include "Enemy.h"
 #include "META.h"
 
-Enemy::Enemy( const Vec2& pos,const Vec2& size,float hp )
+Food::Food( const Vec2& pos,const Vec2& size,float hp )
 	:
 	pos( pos ),
 	size( size ),
@@ -10,18 +10,18 @@ Enemy::Enemy( const Vec2& pos,const Vec2& size,float hp )
 {
 }
 
-void Enemy::Draw( Graphics& gfx ) const
+void Food::Draw( Graphics& gfx ) const
 {
 	gfx.DrawRectSafe( int( pos.x ),int( pos.y ),
 		int( size.x ),int( size.y ),Colors::Magenta );
 }
 
-void Enemy::Target( const Vec2& targetPos )
+void Food::Target( const Vec2& targetPos )
 {
 	// Usually override this, but no error if you don't.
 }
 
-void Enemy::Damage( float damage,Powerup* pPowerup,Random& rng )
+void Food::Damage( float damage,Powerup* pPowerup,Random& rng )
 {
 	health -= damage;
 
@@ -31,28 +31,28 @@ void Enemy::Damage( float damage,Powerup* pPowerup,Random& rng )
 	}
 }
 
-const Vec2& Enemy::GetPos() const
+const Vec2& Food::GetPos() const
 {
 	return pos;
 }
 
-const Rect& Enemy::GetRect() const
+const Rect& Food::GetRect() const
 {
 	return hitbox;
 }
 
-Enemy::operator bool() const
+Food::operator bool() const
 {
 	return( health > 0.0f );
 }
 
 Meatball::Meatball( Random& rng,const Vec2& playerPos )
 	:
-	Enemy( Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
+	Food( Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
 		float( Graphics::ScreenWidth ) ),
 		rng.NextFloat( -float( Graphics::ScreenHeight ),
 		float( Graphics::ScreenHeight ) ) } *2.0f,
-		Vec2{ 40.0f,40.0f },10.0f )
+		Vec2{ 40.0f,40.0f },16.0f )
 {
 	hitbox.MoveTo( pos - size / 2.0f );
 	while( hitbox.IsContainedBy( Graphics::GetScreenRect() ) )
@@ -71,7 +71,7 @@ Meatball::Meatball( Random& rng,const Vec2& playerPos )
 
 Meatball::Meatball( const Vec2& pos )
 	:
-	Enemy( pos,Vec2{ 40.0f,40.0f },10.0f )
+	Food( pos,Vec2{ 40.0f,40.0f },10.0f )
 {
 }
 
@@ -128,11 +128,11 @@ void Meatball::Target( const Vec2& target )
 
 Pasta::Pasta( Random& rng )
 	:
-	Enemy( Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
+	Food( Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
 	float( Graphics::ScreenWidth ) ),
 	rng.NextFloat( -float( Graphics::ScreenHeight ),
 	float( Graphics::ScreenHeight ) ) } *2.0f,
-	Vec2{ 40.0f,40.0f },10.0f )
+	Vec2{ 30.0f,30.0f },10.0f )
 {
 	hitbox.MoveTo( pos - size / 2.0f );
 	while( hitbox.IsContainedBy( Graphics::GetScreenRect() ) )
@@ -152,9 +152,9 @@ void Pasta::Update( Random& rng,const Vec2& playerPos,float dt )
 
 	pos += vel * speed * dt;
 
-	shape.SetRotation( vel.GetAngle() );
+	shape.SetRotation( vel.GetAngle() + 67.5f );
 
-	shape.MoveTo( pos - size / 2.0f );
+	shape.MoveTo( pos );
 	hitbox.MoveTo( pos - size / 2.0f );
 }
 

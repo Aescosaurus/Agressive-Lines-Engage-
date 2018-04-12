@@ -194,6 +194,7 @@ void Hero::Reset()
 	vel = Vec2{ 0.0f,0.0f };
 	hitbox.MoveTo( pos );
 	shape.MoveTo( pos );
+	shape.SetColor( Colors::Cyan );
 }
 
 const Vec2& Hero::GetPos() const

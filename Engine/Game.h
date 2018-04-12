@@ -62,7 +62,7 @@ private:
 	int nEnemies = 10;
 	// std::vector<Meatball> meatballs;
 	// std::vector<Pasta> pastas;
-	std::vector<std::unique_ptr<Enemy>> enemies;
+	std::vector<std::unique_ptr<Food>> foods;
 
 	std::unique_ptr<Powerup> pPowerup = std::make_unique<Powerup>();
 	bool started = false;

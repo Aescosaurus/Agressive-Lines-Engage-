@@ -77,20 +77,20 @@ void Game::UpdateModel()
 		{
 			// meatballs.emplace_back( Meatball{ rng,player.GetPos() } );
 			// pastas.emplace_back( Pasta{ rng } );
-			enemies.emplace_back( std::make_unique<Pasta>( rng ) );
+			foods.emplace_back( std::make_unique<Pasta>( rng ) );
 		}
 		js.Update( wnd.mouse );
 		player += js.GetDir();
 		player.Update( wnd.mouse,dt );
 
-		Enemy* playerTarget;
+		Food* playerTarget;
 		bool targetSet = false;
 		float minDist = 99999999.0f;
 		// for( size_t i = 0; i < meatballs.size(); ++i )
-		for( size_t i = 0; i < enemies.size(); ++i )
+		for( auto it = foods.begin(); it < foods.end(); ++it )
 		{
 			// Meatball& m = meatballs[i];
-			auto& e = enemies[i];
+			auto& e = *it;
 
 			// m.Target( player.GetPos() );
 			e->Target( player.GetPos() );
@@ -125,7 +125,8 @@ void Game::UpdateModel()
 			{
 				// delete m;
 				// meatballs.erase( meatballs.begin() + i );
-				enemies.erase( enemies.begin() + i );
+				it = foods.erase( it );
+				if( it == foods.end() ) return;
 			}
 		}
 
@@ -138,7 +139,7 @@ void Game::UpdateModel()
 
 		bool enemiesLeft = false;
 		// for( const Meatball& m : meatballs )
-		for( const auto& e : enemies )
+		for( const auto& e : foods )
 		{
 			enemiesLeft = true;
 			break;
@@ -164,11 +165,13 @@ void Game::UpdateModel()
 void Game::AdvanceLevel()
 {
 	++level;
-	for( int i = 0; i < nEnemies; ++i )
+	for( int i = 0; i < int( float( nEnemies ) * 0.6f ); ++i )
 	{
-		// meatballs.emplace_back( Meatball{ rng,player.GetPos() } );
-		// pastas.emplace_back( Pasta{ rng } );
-		enemies.emplace_back( std::make_unique<Pasta>( rng ) );
+		foods.emplace_back( std::make_unique<Meatball>( rng,player.GetPos() ) );
+	}
+	for( int i = 0; i < int( float( nEnemies ) * 0.4f ); ++i )
+	{
+		foods.emplace_back( std::make_unique<Pasta>( rng ) );
 	}
 	nEnemies += int( float( nEnemies ) * 1.1f );
 }
@@ -186,7 +189,7 @@ void Game::ResetGame()
 
 	// meatballs.clear();
 	// pastas.clear();
-	enemies.clear();
+	foods.clear();
 }
 
 void Game::ComposeFrame()
@@ -200,7 +203,7 @@ void Game::ComposeFrame()
 	else
 	{
 		// for( const Meatball& m : meatballs )
-		for( const auto& e : enemies )
+		for( const auto& e : foods )
 		{
 			e->Draw( gfx );
 		}
