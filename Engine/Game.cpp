@@ -79,6 +79,10 @@ void Game::UpdateModel()
 			// pastas.emplace_back( Pasta{ rng } );
 			foods.emplace_back( std::make_unique<Pasta>( rng ) );
 		}
+		if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
+		{
+			player.PowerUp();
+		}
 		js.Update( wnd.mouse );
 		player += js.GetDir();
 		player.Update( wnd.mouse,dt );

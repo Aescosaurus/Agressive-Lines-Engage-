@@ -5,9 +5,16 @@
 #include "Poly.h"
 #include "Mouse.h"
 #include <vector>
+#include "Random.h"
 
 class Hero
 {
+private:
+	enum class PowerupType
+	{
+		FasterFireRate,
+		DoubleShot
+	};
 public:
 	class Bullet
 	{
@@ -76,7 +83,8 @@ public:
 private:
 	static constexpr float refireTime = 0.15f;
 	static constexpr float refireTime2 = refireTime / 2.0f;
-	static constexpr float powerCooldown = 15.5f;
+	static constexpr float powerCooldown = 12.5f;
+	PowerupType pt;
 	float powerdownTimer = 0.0f;
 	static constexpr float range = 250.0f;
 	static constexpr float damage = 3.5f;
@@ -84,6 +92,7 @@ private:
 	static constexpr float speed = 60.5f;
 	float shotTimer = 0.0f;
 	bool powerupActive = false;
+	Random rng;
 	Vec2 pos;
 	const Vec2 size;
 	Vec2 vel = { 0.0f,0.0f };

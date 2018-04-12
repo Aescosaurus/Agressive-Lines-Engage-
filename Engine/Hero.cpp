@@ -94,15 +94,31 @@ void Hero::operator>>( const Vec2& target )
 		if( shotTimer > refireTime )
 		{
 			shotTimer = 0.0f;
-			bullets.emplace_back( Bullet{ pos,Vec2{ target - pos }.Normalize() } );
+			if( pt == PowerupType::DoubleShot )
+			{
+				// Shoot 2 bullets instead of just 1.
+				bullets.emplace_back( Bullet{ pos,Vec2( target - pos )
+					.Normalize() } );
+			}
+			else
+			{
+				bullets.emplace_back( Bullet{ pos,Vec2( target - pos )
+					.Normalize() } );
+			}
 		}
 	}
-	else
+	else // Powerup is active.
 	{
-		if( shotTimer > refireTime2 )
+		if( pt == PowerupType::FasterFireRate )
 		{
-			shotTimer = 0.0f;
-			bullets.emplace_back( Bullet{ pos,Vec2{ target - pos }.Normalize() } );
+			if( shotTimer > refireTime2 )
+			{
+				shotTimer = 0.0f;
+				bullets.emplace_back( Bullet{ pos,Vec2{ target - pos }.Normalize() } );
+			}
+		}
+		else if( pt == PowerupType::DoubleShot )
+		{
 		}
 	}
 }
@@ -182,6 +198,9 @@ void Hero::PowerUp()
 	powerupActive = true;
 	powerdownTimer = 0.0f;
 	shape.SetColor( Colors::Yellow );
+
+	pt = PowerupType( rng.NextInt( int( PowerupType::FasterFireRate ),
+		int( PowerupType::DoubleShot ) ) );
 }
 
 void Hero::Reset()
