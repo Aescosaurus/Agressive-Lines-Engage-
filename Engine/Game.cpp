@@ -93,35 +93,39 @@ void Game::UpdateModel()
 			auto& e = enemies[i];
 
 			// m.Target( player.GetPos() );
-			
+			e->Target( player.GetPos() );
 			// m.Update( rng,dt );
-			
+			e->Update( rng,player.GetPos(),dt );
 
-			if( player.GetRect().IsOverlappingWith( m.GetRect() ) )
+			// if( player.GetRect().IsOverlappingWith( m.GetRect() ) )
+			if( player.GetRect().IsOverlappingWith( e->GetRect() ) )
 			{
 				ResetGame();
 				return;
 			}
 
-			if( player <= ( m.GetRect() ) )
+			// if( player <= ( m.GetRect() ) )
+			if( player <= ( e->GetRect() ) )
 			{
-				m.Damage( player.GetDamage(),pPowerup.get(),rng );
+				// m.Damage( player.GetDamage(),pPowerup.get(),rng );
+				e->Damage( player.GetDamage(),pPowerup.get(),rng );
 			}
 
-			if( m && Vec2{ m.GetPos() - player.GetPos() }
+			if( ( *e ) && Vec2{ e->GetPos() - player.GetPos() }
 				.GetLengthSq() < minDist &&
-				Rect{ m.GetPos(),1.0f,1.0f }
+				Rect{ e->GetPos(),1.0f,1.0f }
 				.IsContainedBy( Graphics::GetScreenRect() ) )
 			{ // Target closest within range and screen.
-				minDist = Vec2{ m.GetPos() - player.GetPos() }.GetLengthSq();
-				playerTarget = &m;
+				minDist = Vec2{ e->GetPos() - player.GetPos() }.GetLengthSq();
+				playerTarget = e.get();
 				targetSet = true;
 			}
 
-			if( !( m ) )
+			if( !( *e ) )
 			{
 				// delete m;
-				meatballs.erase( meatballs.begin() + i );
+				// meatballs.erase( meatballs.begin() + i );
+				enemies.erase( enemies.begin() + i );
 			}
 		}
 
@@ -133,7 +137,8 @@ void Game::UpdateModel()
 		pPowerup->Update( dt );
 
 		bool enemiesLeft = false;
-		for( const Meatball& m : meatballs )
+		// for( const Meatball& m : meatballs )
+		for( const auto& e : enemies )
 		{
 			enemiesLeft = true;
 			break;
@@ -179,8 +184,9 @@ void Game::ResetGame()
 	started = false;
 	canStart = false;
 
-	meatballs.clear();
-	pastas.clear();
+	// meatballs.clear();
+	// pastas.clear();
+	enemies.clear();
 }
 
 void Game::ComposeFrame()
@@ -193,9 +199,10 @@ void Game::ComposeFrame()
 	}
 	else
 	{
-		for( const Meatball& m : meatballs )
+		// for( const Meatball& m : meatballs )
+		for( const auto& e : enemies )
 		{
-			m.Draw( gfx );
+			e->Draw( gfx );
 		}
 
 		pPowerup->Draw( gfx );

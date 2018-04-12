@@ -41,6 +41,11 @@ const Rect& Enemy::GetRect() const
 	return hitbox;
 }
 
+Enemy::operator bool() const
+{
+	return( health > 0.0f );
+}
+
 Meatball::Meatball( Random& rng,const Vec2& playerPos )
 	:
 	Enemy( Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
@@ -119,11 +124,6 @@ void Meatball::Target( const Vec2& target )
 		const Vec2 diff = pos - target;
 		vel = diff.GetNormalized() * -1.0f;
 	}
-}
-
-Meatball::operator bool() const
-{
-	return( health > 0.0f );
 }
 
 Pasta::Pasta( Random& rng )

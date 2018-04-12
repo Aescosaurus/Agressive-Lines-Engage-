@@ -14,13 +14,14 @@ public:
 	Enemy( const Vec2& pos,const Vec2& size,float hp );
 
 	virtual void Update( Random& rng,const Vec2& playerPos,float dt ) = 0;
-	void Draw( Graphics& gfx ) const;
+	virtual void Draw( Graphics& gfx ) const;
 
 	virtual void Target( const Vec2& targetPos );
 	void Damage( float damage,Powerup* pPowerup,Random& rng );
 
 	const Vec2& GetPos() const;
 	const Rect& GetRect() const;
+	operator bool() const;
 protected:
 	Vec2 pos;
 	const Vec2 size;
@@ -40,11 +41,9 @@ public:
 	Meatball& operator=( const Meatball& other );
 
 	void Update( Random& rng,const Vec2& playerPos,float dt );
-	void Draw( Graphics& gfx ) const;
+	void Draw( Graphics& gfx ) const override;
 
 	void Target( const Vec2& target );
-
-	operator bool() const;
 private:
 	Meatball( const Vec2& pos );
 private:
@@ -71,7 +70,7 @@ public:
 	Pasta( Random& rng );
 
 	void Update( Random& rng,const Vec2& playerPos,float dt );
-	void Draw( Graphics& gfx ) const;
+	void Draw( Graphics& gfx ) const override;
 private:
 	static constexpr float speed = 105.3f;
 	Vec2 vel = { 0.0f,0.0f };
