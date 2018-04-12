@@ -13,8 +13,8 @@ public:
 	class Bullet
 	{
 	public:
-		Bullet( const Vec2& pos,const Vec2& vel );
-		Bullet( const Vec2& pos,float angle );
+		Bullet( const Vec2& pos,const Vec2& vel,Color c );
+		Bullet( const Vec2& pos,float angle,Color c );
 
 		Bullet( const Bullet& other );
 		Bullet& operator=( const Bullet& other );
@@ -46,9 +46,10 @@ public:
 private:
 	enum class PowerupType
 	{
+		None,
 		FasterFireRate,
-		TripleShot,
-		DoubleShot
+		DoubleShot,
+		TripleShot
 	};
 public:
 	// Construct at position pos;

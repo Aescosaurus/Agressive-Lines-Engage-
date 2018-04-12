@@ -27,7 +27,7 @@ void Powerup::Draw( Graphics& gfx ) const
 		p.Draw( gfx );
 		p.Draw( gfx );
 
-#if !releaseMode
+#if !DRAW_DEBUG_STUFF
 		gfx.DrawHitbox( hitbox );
 #endif
 	}

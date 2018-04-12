@@ -1,3 +1,3 @@
 
 
-#define releaseMode false
+#define DRAW_DEBUG_STUFF false

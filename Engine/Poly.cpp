@@ -39,3 +39,8 @@ void Poly::SetColor( Color c )
 {
 	this->c = c;
 }
+
+Color Poly::GetColor() const
+{
+	return( c );
+}

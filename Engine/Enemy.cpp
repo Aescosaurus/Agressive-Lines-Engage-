@@ -25,7 +25,9 @@ void Food::Damage( float damage,Powerup* pPowerup,Random& rng )
 {
 	health -= damage;
 
-	if( health < 0.0f && rng.NextInt( 0,100 ) > 85 )
+	if( health < 0.0f && rng.NextInt( 0,100 ) > 85 &&
+		!pPowerup->GetRect().IsContainedBy( Graphics
+		::GetScreenRect() ) )
 	{
 		pPowerup->Reset( pos );
 	}
@@ -111,7 +113,7 @@ void Meatball::Draw( Graphics& gfx ) const
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-#if !releaseMode
+#if !DRAW_DEBUG_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
@@ -163,7 +165,7 @@ void Pasta::Draw( Graphics& gfx ) const
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-#if !releaseMode
+#if !DRAW_DEBUG_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }

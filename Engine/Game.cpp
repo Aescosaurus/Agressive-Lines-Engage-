@@ -23,7 +23,7 @@
 
 #include "MainWindow.h"
 #include "Game.h"
-#if releaseMode
+#if DRAW_DEBUG_STUFF
 #include "SpriteCodex.h"
 #endif
 
@@ -32,7 +32,8 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	js( Vec2{ float( Graphics::ScreenWidth - 70 ),70.0f } ),
-	player( Vec2{ float( Graphics::ScreenWidth ),float( Graphics::ScreenHeight ) } / 2.0f ),
+	player( Vec2{ float( Graphics::ScreenWidth ),
+	float( Graphics::ScreenHeight ) } / 2.0f ),
 	pPowerup( new Powerup{ Vec2{ -9999.0f,-9999.0f },false } )
 {
 }
@@ -57,6 +58,12 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	if( wnd.kbd.KeyIsPressed( VK_CONTROL ) &&
+		wnd.kbd.KeyIsPressed( 'W' ) )
+	{
+		// Bop
+		wnd.Kill();
+	}
 	if( !started )
 	{
 		if( wnd.mouse.LeftIsPressed() )
@@ -75,19 +82,15 @@ void Game::UpdateModel()
 
 		if( wnd.mouse.RightIsPressed() )
 		{
-			// meatballs.emplace_back( Meatball{ rng,player.GetPos() } );
-			// pastas.emplace_back( Pasta{ rng } );
-			foods.emplace_back( std::make_unique<Pasta>( rng ) );
-		}
-		if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
-		{
-			player.PowerUp();
+			foods.emplace_back( std
+				::make_unique<Pasta>( rng ) );
 		}
 		js.Update( wnd.mouse );
 		player += js.GetDir();
 		player.Update( wnd.mouse,dt );
 
-		Food* playerTarget;
+		// Always initialize pointer to nullptr!
+		Food* playerTarget = nullptr;
 		bool targetSet = false;
 		float minDist = 99999999.0f;
 		// for( size_t i = 0; i < meatballs.size(); ++i )
@@ -102,7 +105,8 @@ void Game::UpdateModel()
 			e->Update( rng,player.GetPos(),dt );
 
 			// if( player.GetRect().IsOverlappingWith( m.GetRect() ) )
-			if( player.GetRect().IsOverlappingWith( e->GetRect() ) )
+			if( player.GetRect()
+				.IsOverlappingWith( e->GetRect() ) )
 			{
 				ResetGame();
 				return;
@@ -111,8 +115,8 @@ void Game::UpdateModel()
 			// if( player <= ( m.GetRect() ) )
 			if( player <= ( e->GetRect() ) )
 			{
-				// m.Damage( player.GetDamage(),pPowerup.get(),rng );
-				e->Damage( player.GetDamage(),pPowerup.get(),rng );
+				e->Damage( player.GetDamage(),
+					pPowerup.get(),rng );
 			}
 
 			if( ( *e ) && Vec2{ e->GetPos() - player.GetPos() }
@@ -120,7 +124,8 @@ void Game::UpdateModel()
 				Rect{ e->GetPos(),1.0f,1.0f }
 				.IsContainedBy( Graphics::GetScreenRect() ) )
 			{ // Target closest within range and screen.
-				minDist = Vec2{ e->GetPos() - player.GetPos() }.GetLengthSq();
+				minDist = Vec2{ e->GetPos() -
+					player.GetPos() }.GetLengthSq();
 				playerTarget = e.get();
 				targetSet = true;
 			}
@@ -153,7 +158,8 @@ void Game::UpdateModel()
 			AdvanceLevel();
 		}
 
-		if( player.GetRect().IsOverlappingWith( pPowerup->GetRect() ) )
+		if( player.GetRect().IsOverlappingWith( pPowerup
+			->GetRect() ) )
 		{
 			player.PowerUp();
 			pPowerup->Reset( { 9999.0f,9999.0f } );
@@ -169,11 +175,12 @@ void Game::UpdateModel()
 void Game::AdvanceLevel()
 {
 	++level;
-	for( int i = 0; i < int( float( nEnemies ) * 0.6f ); ++i )
+	for( int i = 0; i < int( nEnemies * 0.6f ); ++i )
 	{
-		foods.emplace_back( std::make_unique<Meatball>( rng,player.GetPos() ) );
+		foods.emplace_back( std::make_unique<Meatball>( rng,
+			player.GetPos() ) );
 	}
-	for( int i = 0; i < int( float( nEnemies ) * 0.4f ); ++i )
+	for( int i = 0; i < int( nEnemies * 0.4f ); ++i )
 	{
 		foods.emplace_back( std::make_unique<Pasta>( rng ) );
 	}
@@ -200,10 +207,10 @@ void Game::ComposeFrame()
 {
 	if( !started )
 	{
-#if releaseMode
+#if DRAW_DEBUG_STUFF
 		SpriteCodex::DrawTitleScreen( gfx );
 #endif
-	}
+}
 	else
 	{
 		// for( const Meatball& m : meatballs )
