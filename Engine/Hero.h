@@ -9,17 +9,13 @@
 
 class Hero
 {
-private:
-	enum class PowerupType
-	{
-		FasterFireRate,
-		DoubleShot
-	};
 public:
 	class Bullet
 	{
 	public:
 		Bullet( const Vec2& pos,const Vec2& vel );
+		Bullet( const Vec2& pos,float angle );
+
 		Bullet( const Bullet& other );
 		Bullet& operator=( const Bullet& other );
 
@@ -46,6 +42,13 @@ public:
 		};
 		bool alive = true;
 		Rect hitbox;
+	};
+private:
+	enum class PowerupType
+	{
+		FasterFireRate,
+		TripleShot,
+		DoubleShot
 	};
 public:
 	// Construct at position pos;

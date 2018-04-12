@@ -13,6 +13,12 @@ Hero::Bullet::Bullet( const Vec2& pos,const Vec2& vel )
 	shape.MoveTo( pos );
 }
 
+Hero::Bullet::Bullet( const Vec2& pos,float angle )
+	:
+	Bullet( pos,Vec2( std::cos( angle ),std::sin( angle ) ) )
+{
+}
+
 Hero::Bullet::Bullet( const Bullet& other )
 	:
 	size( other.size )
@@ -89,7 +95,7 @@ void Hero::operator+=( const Vec2& moveAmount )
 
 void Hero::operator>>( const Vec2& target )
 {
-	if( !powerupActive )
+	if( !powerupActive || pt != PowerupType::FasterFireRate )
 	{
 		if( shotTimer > refireTime )
 		{
@@ -97,8 +103,20 @@ void Hero::operator>>( const Vec2& target )
 			if( pt == PowerupType::DoubleShot )
 			{
 				// Shoot 2 bullets instead of just 1.
+				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
+					.GetAngle() + 3.0f } );
+				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
+					.GetAngle() - 3.0f } );
+			}
+			else if( pt == PowerupType::TripleShot )
+			{
+				// Shoot 3 bullets instead of just 1.
 				bullets.emplace_back( Bullet{ pos,Vec2( target - pos )
-					.Normalize() } );
+					.GetAngle() + 0.0f } );
+				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
+					.GetAngle() + 3.4f } );
+				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
+					.GetAngle() - 3.4f } );
 			}
 			else
 			{
@@ -107,18 +125,12 @@ void Hero::operator>>( const Vec2& target )
 			}
 		}
 	}
-	else // Powerup is active.
+	else if( pt == PowerupType::FasterFireRate )
 	{
-		if( pt == PowerupType::FasterFireRate )
+		if( shotTimer > refireTime2 )
 		{
-			if( shotTimer > refireTime2 )
-			{
-				shotTimer = 0.0f;
-				bullets.emplace_back( Bullet{ pos,Vec2{ target - pos }.Normalize() } );
-			}
-		}
-		else if( pt == PowerupType::DoubleShot )
-		{
+			shotTimer = 0.0f;
+			bullets.emplace_back( Bullet{ pos,Vec2{ target - pos }.Normalize() } );
 		}
 	}
 }
@@ -159,6 +171,7 @@ void Hero::Update( const Mouse& ms,float dt )
 		if( powerdownTimer > powerCooldown )
 		{
 			powerupActive = false;
+			powerdownTimer = 0.0f;
 			shape.SetColor( Colors::Cyan );
 		}
 	}
@@ -197,10 +210,13 @@ void Hero::PowerUp()
 {
 	powerupActive = true;
 	powerdownTimer = 0.0f;
-	shape.SetColor( Colors::Yellow );
 
 	pt = PowerupType( rng.NextInt( int( PowerupType::FasterFireRate ),
 		int( PowerupType::DoubleShot ) ) );
+
+	if( pt == PowerupType::FasterFireRate ) shape.SetColor( Colors::Yellow );
+	if( pt == PowerupType::DoubleShot ) shape.SetColor( Colors::LightGray );
+	if( pt == PowerupType::TripleShot ) shape.SetColor( Colors::Gray );
 }
 
 void Hero::Reset()
