@@ -47,6 +47,13 @@ void Joystick::Draw( Graphics& gfx ) const
 	gfx.DrawCircle( int( pos.x ),int( pos.y ),int( size ) - 5,Colors::Gray );
 }
 
+void Joystick::Reset()
+{
+	pos = basePos;
+	dir = { 0.0f,0.0f };
+	selected = false;
+}
+
 const Vec2& Joystick::GetDir() const
 {
 	return dir;

@@ -5,6 +5,7 @@
 #include "Poly.h"
 #include "Mouse.h"
 #include <vector>
+#include "Random.h"
 
 class Hero
 {
@@ -12,7 +13,9 @@ public:
 	class Bullet
 	{
 	public:
-		Bullet( const Vec2& pos,const Vec2& vel );
+		Bullet( const Vec2& pos,const Vec2& vel,Color c );
+		Bullet( const Vec2& pos,float angle,Color c );
+
 		Bullet( const Bullet& other );
 		Bullet& operator=( const Bullet& other );
 
@@ -39,6 +42,14 @@ public:
 		};
 		bool alive = true;
 		Rect hitbox;
+	};
+private:
+	enum class PowerupType
+	{
+		None,
+		FasterFireRate,
+		DoubleShot,
+		TripleShot
 	};
 public:
 	// Construct at position pos;
@@ -76,7 +87,8 @@ public:
 private:
 	static constexpr float refireTime = 0.15f;
 	static constexpr float refireTime2 = refireTime / 2.0f;
-	static constexpr float powerCooldown = 15.5f;
+	static constexpr float powerCooldown = 12.5f;
+	PowerupType pt;
 	float powerdownTimer = 0.0f;
 	static constexpr float range = 250.0f;
 	static constexpr float damage = 3.5f;
@@ -84,6 +96,7 @@ private:
 	static constexpr float speed = 60.5f;
 	float shotTimer = 0.0f;
 	bool powerupActive = false;
+	Random rng;
 	Vec2 pos;
 	const Vec2 size;
 	Vec2 vel = { 0.0f,0.0f };

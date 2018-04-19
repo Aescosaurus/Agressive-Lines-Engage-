@@ -20,6 +20,8 @@ public:
 	void Rotate( float amount );
 	void SetRotation( float amount );
 	void SetColor( Color c );
+
+	Color GetColor() const;
 private:
 	Vec2 pos = Vec2{ 200.0f,200.0f };
 	float angle = 0.0f;

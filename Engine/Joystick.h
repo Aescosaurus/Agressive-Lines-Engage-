@@ -13,6 +13,8 @@ public:
 	void Update( const Mouse& ms );
 	void Draw( Graphics& gfx ) const;
 
+	void Reset();
+
 	const Vec2& GetDir() const;
 private:
 	static constexpr float size = 35.0f;
