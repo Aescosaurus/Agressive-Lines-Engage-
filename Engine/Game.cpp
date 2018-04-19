@@ -23,7 +23,7 @@
 
 #include "MainWindow.h"
 #include "Game.h"
-#if DRAW_DEBUG_STUFF
+#if DRAW_RELEASE_STUFF
 #include "SpriteCodex.h"
 #endif
 
@@ -33,19 +33,8 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	js( Vec2{ float( Graphics::ScreenWidth - 70 ),70.0f } ),
 	player( Vec2{ float( Graphics::ScreenWidth ),
-	float( Graphics::ScreenHeight ) } / 2.0f ),
-	pPowerup( new Powerup{ Vec2{ -9999.0f,-9999.0f },false } )
+	float( Graphics::ScreenHeight ) } / 2.0f )
 {
-}
-
-Game::~Game()
-{
-	// for( const Meatball* m : pMeatballs )
-	// {
-	// 	delete m;
-	// }
-	// 
-	// delete pPowerup;
 }
 
 void Game::Go()
@@ -93,19 +82,17 @@ void Game::UpdateModel()
 		Food* playerTarget = nullptr;
 		bool targetSet = false;
 		float minDist = 99999999.0f;
-		// for( size_t i = 0; i < meatballs.size(); ++i )
 		std::vector<DuoVec2> tempVec;
-		for( auto it = foods.begin(); it < foods.end(); ++it )
+		for( auto it = foods.begin();
+			it < foods.end();
+			++it )
 		{
-			// Meatball& m = meatballs[i];
 			auto& e = *it;
 
-			// m.Target( player.GetPos() );
 			e->Target( player.GetPos() );
-			// m.Update( rng,dt );
+
 			e->Update( rng,player.GetPos(),dt );
 
-			// if( player.GetRect().IsOverlappingWith( m.GetRect() ) )
 			if( player.GetRect()
 				.IsOverlappingWith( e->GetRect() ) )
 			{
@@ -113,7 +100,6 @@ void Game::UpdateModel()
 				return;
 			}
 
-			// if( player <= ( m.GetRect() ) )
 			if( player <= ( e->GetRect() ) )
 			{
 				e->Damage( player.GetDamage(),
@@ -141,10 +127,12 @@ void Game::UpdateModel()
 
 		for( const auto& x : tempVec )
 		{
-			foods.emplace_back( std::make_unique<OrangeSlice>( x ) );
+			foods.emplace_back( std
+				::make_unique<OrangeSlice>( x ) );
 		}
 
-		if( targetSet && minDist < player.GetRange() * player.GetRange() )
+		if( targetSet && minDist < player.GetRange() *
+			player.GetRange() )
 		{
 			player >> playerTarget->GetPos();
 		}
@@ -152,7 +140,6 @@ void Game::UpdateModel()
 		pPowerup->Update( dt );
 
 		bool enemiesLeft = false;
-		// for( const Meatball& m : meatballs )
 		for( const auto& e : foods )
 		{
 			enemiesLeft = true;
@@ -240,8 +227,6 @@ void Game::ResetGame()
 	started = false;
 	canStart = false;
 
-	// meatballs.clear();
-	// pastas.clear();
 	foods.clear();
 	js.Reset();
 }
@@ -250,13 +235,12 @@ void Game::ComposeFrame()
 {
 	if( !started )
 	{
-#if DRAW_DEBUG_STUFF
+#if DRAW_RELEASE_STUFF
 		SpriteCodex::DrawTitleScreen( gfx );
 #endif
 	}
 	else
 	{
-		// for( const Meatball& m : meatballs )
 		for( const auto& e : foods )
 		{
 			e->Draw( gfx );

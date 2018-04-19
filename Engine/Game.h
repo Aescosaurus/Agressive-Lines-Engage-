@@ -38,7 +38,6 @@ public:
 	Game( class MainWindow& wnd );
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
-	~Game();
 	void Go();
 private:
 	void ComposeFrame();
@@ -60,11 +59,11 @@ private:
 
 	int level = 1;
 	int nEnemies = 10;
-	// std::vector<Meatball> meatballs;
-	// std::vector<Pasta> pastas;
 	std::vector<std::unique_ptr<Food>> foods;
 
-	std::unique_ptr<Powerup> pPowerup = std::make_unique<Powerup>();
+	std::unique_ptr<Powerup> pPowerup = std
+		::make_unique<Powerup>( Vec2( 9999.0f,9999.0f ),
+			false );
 	bool started = false;
 	bool canStart = false;
 	/********************************/

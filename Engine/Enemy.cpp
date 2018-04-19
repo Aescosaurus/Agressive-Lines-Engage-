@@ -118,7 +118,7 @@ void Meatball::Draw( Graphics& gfx ) const
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
@@ -170,7 +170,7 @@ void Pasta::Draw( Graphics& gfx ) const
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
@@ -229,7 +229,7 @@ void Orange::Draw( Graphics& gfx ) const
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
@@ -264,20 +264,20 @@ OrangeSlice::OrangeSlice( const DuoVec2& posAndVel )
 
 void OrangeSlice::Update( Random& rng,const Vec2& playerPos,float dt )
 {
-	pos += vel * mySpeed * dt;
+	pos += vel * speed * dt;
 
 	// shape.Rotate( rng.NextFloat( dt,rotSpeed * dt ) );
 
 	hitbox.MoveTo( pos - size / 2.0f );
-	myShape.MoveTo( pos );
+	shape.MoveTo( pos );
 }
 
 void OrangeSlice::Draw( Graphics& gfx ) const
 {
-	myShape.Draw( gfx );
-	myShape.Draw( gfx );
+	shape.Draw( gfx );
+	shape.Draw( gfx );
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }

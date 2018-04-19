@@ -112,10 +112,11 @@ public:
 protected:
 	Orange( const Vec2& pos,const Vec2& size,float hp );
 protected:
-	static constexpr float speed = 60.0f;
 	Vec2 vel;
 	static constexpr float sc = 25.0f;
 	static constexpr float ss = sc / 1.5f;
+private:
+	static constexpr float speed = 60.0f;
 	Poly shape =
 	{
 		{
@@ -140,10 +141,10 @@ public:
 
 	void EndRoutine( std::vector<DuoVec2>& foodVec ) override;
 private:
-	static constexpr float mySpeed = 50.0f;
+	static constexpr float speed = 50.0f;
 	static constexpr float mc = sc / 2.0f;
 	static constexpr float ms = mc / 1.5f;
-	Poly myShape =
+	Poly shape =
 	{
 		{
 			Vec2{ -ms,-ms },Vec2{ 0.0f,-mc },

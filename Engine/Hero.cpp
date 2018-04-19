@@ -59,7 +59,7 @@ void Hero::Bullet::Draw( Graphics& gfx ) const
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
@@ -208,7 +208,7 @@ void Hero::Draw( Graphics& gfx )
 		b.Draw( gfx );
 	}
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
