@@ -192,6 +192,7 @@ void Hero::Update( const Mouse& ms,float dt )
 	while( int( pos.y + size.y ) > Graphics::ScreenHeight ) pos.y -= incAmount;
 
 	shape.MoveTo( pos );
+	shield.MoveTo( pos );
 	hitbox.MoveTo( pos - size / 2.0f );
 }
 
@@ -202,6 +203,9 @@ void Hero::Draw( Graphics& gfx )
 	// 	int( size.x ),int( size.y ),Colors::Cyan );
 	shape.Draw( gfx );
 	shape.Draw( gfx );
+
+	shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+	shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
 
 	for( const Bullet& b : bullets )
 	{
@@ -238,6 +242,7 @@ void Hero::PowerUp()
 
 void Hero::Reset()
 {
+	hp = maxHP;
 	powerupActive = false;
 	shotTimer = 0.0f;
 	powerdownTimer = 0.0f;
@@ -247,6 +252,11 @@ void Hero::Reset()
 	hitbox.MoveTo( pos );
 	shape.MoveTo( pos );
 	shape.SetColor( Colors::Cyan );
+}
+
+void Hero::Attack()
+{
+	--hp;
 }
 
 const Vec2& Hero::GetPos() const
@@ -267,4 +277,9 @@ const float& Hero::GetRange() const
 const float& Hero::GetDamage() const
 {
 	return damage;
+}
+
+int Hero::GetHP() const
+{
+	return hp;
 }

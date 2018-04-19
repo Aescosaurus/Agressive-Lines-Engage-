@@ -30,6 +30,7 @@ public:
 
 	virtual void Target( const Vec2& targetPos );
 	void Damage( float damage,Powerup* pPowerup,Random& rng );
+	void Destroy( Powerup* pPowerup,Random& rng );
 	virtual void EndRoutine( std::vector<DuoVec2>& foodVec );
 
 	const Vec2& GetPos() const;

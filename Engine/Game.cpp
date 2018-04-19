@@ -33,7 +33,7 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	js( Vec2{ float( Graphics::ScreenWidth - 70 ),70.0f } ),
 	player( Vec2{ float( Graphics::ScreenWidth ),
-	float( Graphics::ScreenHeight ) } / 2.0f )
+		float( Graphics::ScreenHeight ) } / 2.0f )
 {
 }
 
@@ -96,8 +96,14 @@ void Game::UpdateModel()
 			if( player.GetRect()
 				.IsOverlappingWith( e->GetRect() ) )
 			{
-				ResetGame();
-				return;
+				// ResetGame();
+				player.Attack();
+				e->Destroy( pPowerup.get(),rng );
+				if( player.GetHP() < 1 )
+				{
+					ResetGame();
+					return;
+				}
 			}
 
 			if( player <= ( e->GetRect() ) )

@@ -14,6 +14,7 @@ public:
 	Poly( std::string filePath,Color c = Colors::Magenta );
 
 	void Draw( Graphics& gfx ) const;
+	void DrawTransparent( float alpha,Graphics& gfx ) const;
 
 	void MoveTo( const Vec2& pos );
 

@@ -33,6 +33,17 @@ void Food::Damage( float damage,Powerup* pPowerup,Random& rng )
 	}
 }
 
+void Food::Destroy( Powerup* pPowerup,Random& rng )
+{
+	health = -1.0f;
+	if( rng.NextInt( 0,100 ) > 85 &&
+		!pPowerup->GetRect().IsContainedBy( Graphics
+			::GetScreenRect() ) )
+	{
+		pPowerup->Reset( pos );
+	}
+}
+
 void Food::EndRoutine( std::vector<DuoVec2>& foodVec )
 {
 	// Do nothing, for most foods.

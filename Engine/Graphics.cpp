@@ -183,11 +183,11 @@ Graphics::Graphics( HWNDKey& key )
 	const FSQVertex vertices[] =
 	{
 		{ -1.0f,1.0f,0.5f,0.0f,0.0f },
-		{ 1.0f,1.0f,0.5f,1.0f,0.0f },
-		{ 1.0f,-1.0f,0.5f,1.0f,1.0f },
-		{ -1.0f,1.0f,0.5f,0.0f,0.0f },
-		{ 1.0f,-1.0f,0.5f,1.0f,1.0f },
-		{ -1.0f,-1.0f,0.5f,0.0f,1.0f },
+	{ 1.0f,1.0f,0.5f,1.0f,0.0f },
+	{ 1.0f,-1.0f,0.5f,1.0f,1.0f },
+	{ -1.0f,1.0f,0.5f,0.0f,0.0f },
+	{ 1.0f,-1.0f,0.5f,1.0f,1.0f },
+	{ -1.0f,-1.0f,0.5f,0.0f,1.0f },
 	};
 	D3D11_BUFFER_DESC bd = {};
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -207,7 +207,7 @@ Graphics::Graphics( HWNDKey& key )
 	const D3D11_INPUT_ELEMENT_DESC ied[] =
 	{
 		{ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
-		{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0 }
+	{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0 }
 	};
 
 	// Ignore the intellisense error "namespace has no member"
@@ -329,6 +329,24 @@ void Graphics::PutPixel( int x,int y,Color c,unsigned char alpha )
 void Graphics::PutPixel( int x,int y,Color c,float alpha )
 {
 	PutPixel( x,y,c,unsigned char( alpha * 255 ) );
+}
+
+void Graphics::PutPixelT( int x,int y,Color c,float alpha )
+{
+	const Color srcPixel = c;
+	const Color dstPixel = pSysBuffer[y * ScreenWidth + x];
+
+	const Color blendedPixel =
+	{
+		unsigned char( ( srcPixel.GetR() * alpha +
+			dstPixel.GetR() * ( 1.0f - alpha ) ) / 2.0f ),
+		unsigned char( ( srcPixel.GetG() * alpha +
+			dstPixel.GetG() * ( 1.0f - alpha ) ) / 2.0f ),
+		unsigned char( ( srcPixel.GetB() * alpha +
+			dstPixel.GetB() * ( 1.0f - alpha ) ) / 2.0f )
+	};
+
+	pSysBuffer[Graphics::ScreenWidth * y + x] = blendedPixel;
 }
 
 void Graphics::PutPixel( int x,int y,Color c )
@@ -518,6 +536,93 @@ void Graphics::DrawLine( int x0,int y0,int x1,int y1,Color c )
 			// plot( x,floor( intery ) + 1,intery - floor( intery ) )
 			PutPixel( x,int( floor( intery ) ),c,float( 1 - intery - floor( intery ) ) );
 			PutPixel( x,int( floor( intery ) + 1 ),c,float( intery - floor( intery ) ) );
+			intery = intery + gradient;
+		}
+	}
+}
+
+void Graphics::DrawTransparentLine( const Vec2& pos1,const Vec2& pos2,float alpha,Color c )
+{
+	int x0 = int( pos1.x );
+	int y0 = int( pos1.y );
+	int x1 = int( pos2.x );
+	int y1 = int( pos2.y );
+	if( !( x0 > 1 && x0 < ScreenWidth - 1 &&
+		x1 > 1 && x1 < ScreenWidth - 1 &&
+		y0 > 1 && y0 < ScreenHeight - 1 &&
+		y1 > 1 && y1 < ScreenHeight - 1 ) )
+	{
+		return;
+	}
+	bool steep = ( abs( y1 - y0 ) > abs( x1 - x0 ) );
+
+	if( steep )
+	{
+		std::swap( x0,y0 );
+		std::swap( x1,y1 );
+	}
+	if( x0 > x1 )
+	{
+		std::swap( x0,x1 );
+		std::swap( y0,y1 );
+	}
+
+	float dx = float( x1 - x0 );
+	float dy = float( y1 - y0 );
+	float gradient = dy / dx;
+	if( dx == 0.0 )
+	{
+		gradient = 1.0;
+	}
+
+	// handle first endpoint
+	float xend = float( round( x0 ) );
+	float yend = y0 + gradient * ( xend - x0 );
+	float xgap = 1 - x0 + 0.5f - floor( x0 + 0.5f );
+	float xpxl1 = xend; // this will be used in the main loop
+	float ypxl1 = floor( yend );
+	if( steep )
+	{
+		PutPixelT( int( ypxl1 ),int( xpxl1 ),c,alpha );
+		PutPixelT( int( ypxl1 + 1 ),int( xpxl1 ),c,alpha );
+	}
+	else
+	{
+		PutPixelT( int( xpxl1 ),int( ypxl1 ),c,alpha );
+		PutPixelT( int( xpxl1 ),int( ypxl1 + 1 ),c,alpha );
+	}
+	float intery = yend + gradient;
+	xend = float( round( x1 ) );
+	yend = y1 + gradient * ( xend - x1 );
+	xgap = x1 + 0.5f - floor( x1 + 0.5f );
+	float xpxl2 = xend; //this will be used in the main loop
+	float ypxl2 = floor( yend );
+	if( steep )
+	{
+		PutPixelT( int( ypxl2 ),int( xpxl2 ),c,alpha );
+		PutPixelT( int( ypxl2 + 1 ),int( xpxl2 ),c,alpha );
+	}
+	else
+	{
+		PutPixelT( int( xpxl2 ),int( ypxl2 ),c,alpha );
+		PutPixelT( int( xpxl2 ),int( ypxl2 + 1 ),c,alpha );
+	}
+
+	if( steep )
+	{
+		for( int x = int( xpxl1 + 1 ); x < int( xpxl2 - 1 ); ++x )
+		{
+			PutPixelT( int( floor( intery ) ),x,c,alpha );
+			PutPixelT( int( floor( intery ) + 1 ),x,c,alpha );
+			intery = intery + gradient;
+		}
+	}
+	else
+	{
+		for( int x = int( xpxl1 + 1 ); x < int( xpxl2 - 1 ); ++x )
+		{
+			PutPixelT( x,int( floor( intery ) ),c,alpha );
+			PutPixelT( x,int( floor( intery ) + 1 ),c,alpha );
 			intery = intery + gradient;
 		}
 	}
