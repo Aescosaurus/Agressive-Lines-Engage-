@@ -180,15 +180,52 @@ void Game::UpdateModel()
 void Game::AdvanceLevel()
 {
 	++level;
-	for( int i = 0; i < int( nEnemies * 0.6f ); ++i )
+	int dist1;
+	int dist2;
+	int dist3;
 	{
-		foods.emplace_back( std::make_unique<Meatball>( rng,
-			player.GetPos() ) );
+		if( level > 0 )
+		{
+			dist1 = int( nEnemies * 1.0f );
+			dist2 = int( nEnemies * 0.0f );
+			dist3 = int( nEnemies * 0.0f );
+		}
+		if( level > 3 )
+		{
+			dist1 = int( nEnemies * 0.7f );
+			dist2 = int( nEnemies * 0.3f );
+			dist3 = int( nEnemies * 0.0f );
+		}
+		if( level > 5 )
+		{
+			dist1 = int( nEnemies * 0.5f );
+			dist2 = int( nEnemies * 0.3f );
+			dist3 = int( nEnemies * 0.2f );
+		}
+		if( level > 8 )
+		{
+			dist1 = int( nEnemies * 0.3f );
+			dist2 = int( nEnemies * 0.4f );
+			dist3 = int( nEnemies * 0.3f );
+		}
 	}
-	for( int i = 0; i < int( nEnemies * 0.4f ); ++i )
+
 	{
-		foods.emplace_back( std::make_unique<Pasta>( rng ) );
+		for( int i = 0; i < dist1; ++i )
+		{
+			foods.emplace_back( std::make_unique<Meatball>( rng,
+				player.GetPos() ) );
+		}
+		for( int i = 0; i < dist2; ++i )
+		{
+			foods.emplace_back( std::make_unique<Pasta>( rng ) );
+		}
+		for( int i = 0; i < dist3; ++i )
+		{
+			foods.emplace_back( std::make_unique<Orange>( rng ) );
+		}
 	}
+
 	nEnemies += int( float( nEnemies ) * 1.1f );
 }
 
@@ -216,7 +253,7 @@ void Game::ComposeFrame()
 #if DRAW_DEBUG_STUFF
 		SpriteCodex::DrawTitleScreen( gfx );
 #endif
-}
+	}
 	else
 	{
 		// for( const Meatball& m : meatballs )
