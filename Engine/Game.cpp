@@ -61,7 +61,7 @@ void Game::UpdateModel()
 	if( wnd.kbd.KeyIsPressed( VK_CONTROL ) &&
 		wnd.kbd.KeyIsPressed( 'W' ) )
 	{
-		// Bop
+		// Bop!
 		wnd.Kill();
 	}
 	if( !started )
@@ -83,7 +83,7 @@ void Game::UpdateModel()
 		if( wnd.mouse.RightIsPressed() )
 		{
 			foods.emplace_back( std
-				::make_unique<Pasta>( rng ) );
+				::make_unique<Orange>( rng ) );
 		}
 		js.Update( wnd.mouse );
 		player += js.GetDir();
@@ -94,6 +94,7 @@ void Game::UpdateModel()
 		bool targetSet = false;
 		float minDist = 99999999.0f;
 		// for( size_t i = 0; i < meatballs.size(); ++i )
+		std::vector<DuoVec2> tempVec;
 		for( auto it = foods.begin(); it < foods.end(); ++it )
 		{
 			// Meatball& m = meatballs[i];
@@ -132,11 +133,15 @@ void Game::UpdateModel()
 
 			if( !( *e ) )
 			{
-				// delete m;
-				// meatballs.erase( meatballs.begin() + i );
+				e->EndRoutine( tempVec );
 				it = foods.erase( it );
 				if( it == foods.end() ) return;
 			}
+		}
+
+		for( const auto& x : tempVec )
+		{
+			foods.emplace_back( std::make_unique<OrangeSlice>( x ) );
 		}
 
 		if( targetSet && minDist < player.GetRange() * player.GetRange() )
@@ -201,6 +206,7 @@ void Game::ResetGame()
 	// meatballs.clear();
 	// pastas.clear();
 	foods.clear();
+	js.Reset();
 }
 
 void Game::ComposeFrame()
