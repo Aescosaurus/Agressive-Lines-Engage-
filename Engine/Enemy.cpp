@@ -124,8 +124,6 @@ void Meatball::Update( Random& rng,const Vec2& playerPos,float dt )
 
 void Meatball::Draw( Graphics& gfx ) const
 {
-	// gfx.DrawCircleSafe( int( pos.x ),int( pos.y ),
-	// 	int( size.x / 2.0f ),Colors::Red );
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
@@ -229,8 +227,6 @@ void Orange::Update( Random& rng,const Vec2& playerPos,float dt )
 {
 	pos += vel * speed * dt;
 
-	// shape.Rotate( rng.NextFloat( dt,rotSpeed * dt ) );
-
 	hitbox.MoveTo( pos - size / 2.0f );
 	shape.MoveTo( pos );
 }
@@ -275,9 +271,8 @@ OrangeSlice::OrangeSlice( const DuoVec2& posAndVel )
 
 void OrangeSlice::Update( Random& rng,const Vec2& playerPos,float dt )
 {
-	pos += vel * speed * dt;
-
-	// shape.Rotate( rng.NextFloat( dt,rotSpeed * dt ) );
+	// Moves slightly faster than big orange.
+	pos += vel * speed * 1.5f * dt;
 
 	hitbox.MoveTo( pos - size / 2.0f );
 	shape.MoveTo( pos );

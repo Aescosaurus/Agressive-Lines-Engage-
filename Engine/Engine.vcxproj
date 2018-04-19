@@ -150,7 +150,6 @@
     <ClInclude Include="Joystick.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="Menu.h" />
     <ClInclude Include="META.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Poly.h" />

@@ -114,7 +114,7 @@ protected:
 	Orange( const Vec2& pos,const Vec2& size,float hp );
 protected:
 	Vec2 vel;
-	static constexpr float sc = 25.0f;
+	static constexpr float sc = 22.0f;
 	static constexpr float ss = sc / 1.5f;
 private:
 	static constexpr float speed = 60.0f;

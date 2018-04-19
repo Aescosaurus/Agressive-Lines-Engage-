@@ -52,41 +52,25 @@ private:
 		TripleShot
 	};
 public:
-	// Construct at position pos;
 	Hero( const Vec2& pos );
-	// NO COPY!!
 	Hero( const Hero& other ) = delete;
-	// NO COPY!!
 	Hero& operator=( const Hero& other ) = delete;
 
-	// Move by moveAmount.
 	void operator+=( const Vec2& moveAmount );
-	// Shoot at target.
 	void operator>>( const Vec2& target );
-	// Check for bullet hit.
 	bool operator<=( const Rect& hitRect );
 
-	// Check for mouse press, etc.
 	void Update( const Mouse& ms,float dt );
-	// Draw my dude to the screen.
 	void Draw( Graphics& gfx );
 
-	// Call this when hero collects powerup.
 	void PowerUp();
-	// Reset player to initial state.
 	void Reset();
-	// Attack the player.
 	void Attack();
 
-	// Returns position of center.
 	const Vec2& GetPos() const;
-	// Returns collision rectangle.
 	const Rect& GetRect() const;
-	// Gives max targeting distance.
 	const float& GetRange() const;
-	// Tells damage of each bullet fired.
 	const float& GetDamage() const;
-	// Get the amount of health the player currently has.
 	int GetHP() const;
 private:
 	static constexpr float refireTime = 0.15f;

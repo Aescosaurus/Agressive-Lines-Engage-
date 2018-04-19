@@ -89,7 +89,6 @@ Hero::Hero( const Vec2& pos )
 
 void Hero::operator+=( const Vec2& moveAmount )
 {
-	// pos += moveAmount;
 	vel = moveAmount;
 	shape.SetRotation( vel.GetAngle() );
 }
@@ -158,16 +157,16 @@ void Hero::Update( const Mouse& ms,float dt )
 {
 	shotTimer += dt;
 
-	for( size_t i = 0; i < bullets.size(); ++i )
+	for( auto& it = bullets.begin(); it < bullets.end(); ++it )
 	{
-		if( bullets[i] )
+		auto& b = *it;
+		if( b )
 		{
-			bullets[i].Update( dt );
+			b.Update( dt );
 		}
 		else
 		{
-			bullets.erase( bullets.begin() + i );
-			--i; // Really important!
+			it = bullets.erase( it );
 		}
 	}
 
@@ -198,9 +197,6 @@ void Hero::Update( const Mouse& ms,float dt )
 
 void Hero::Draw( Graphics& gfx )
 {
-	// const Vec2 dPos = pos - size / 2.0f;
-	// gfx.DrawRect( int( dPos.x ),int( dPos.y ),
-	// 	int( size.x ),int( size.y ),Colors::Cyan );
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 

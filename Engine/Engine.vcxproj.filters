@@ -87,9 +87,6 @@
     <ClInclude Include="Enemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Powerup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
