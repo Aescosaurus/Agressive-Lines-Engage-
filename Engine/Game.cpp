@@ -246,9 +246,17 @@ void Game::AdvanceLevel()
 	{
 		nEnemies += int( float( nEnemies ) * 1.1f );
 	}
-	else
+	else if( level <= 7 )
 	{
 		nEnemies += int( float( nEnemies ) * 1.01f );
+	}
+	else if( level <= 10 )
+	{
+		nEnemies += int( float( nEnemies ) * 1.0005 );
+	}
+	else
+	{
+		++nEnemies;
 	}
 }
 
