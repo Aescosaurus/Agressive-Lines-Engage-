@@ -64,6 +64,7 @@ public:
 	void Draw( Graphics& gfx );
 
 	void PowerUp();
+	void Heal();
 	void Reset();
 	void Attack();
 
@@ -72,6 +73,7 @@ public:
 	const float& GetRange() const;
 	const float& GetDamage() const;
 	int GetHP() const;
+	bool IsMaxHP() const;
 private:
 	static constexpr float refireTime = 0.15f;
 	static constexpr float refireTime2 = refireTime / 2.0f;
@@ -83,6 +85,7 @@ private:
 	static constexpr float speed = 60.5f;
 	float shotTimer = 0.0f;
 	bool powerupActive = false;
+	static constexpr int healAmount = 5;
 	static constexpr int maxHP = 10;
 	int hp = maxHP;
 	Random rng;

@@ -1,5 +1,5 @@
-/****************************************************************************************** 
- *	Chili DirectX Framework Version 16.07.20											  *	
+/******************************************************************************************
+ *	Chili DirectX Framework Version 16.07.20											  *
  *	Game.h																				  *
  *	Copyright 2016 PlanetChili.net <http://www.planetchili.net>							  *
  *																						  *
@@ -31,6 +31,7 @@
 #include "FrameTimer.h"
 #include "Powerup.h"
 #include <memory>
+#include "Recharger.h"
 
 class Game
 {
@@ -48,7 +49,7 @@ private:
 	void ResetGame();
 	/********************************/
 private:
-	MainWindow& wnd;
+	MainWindow & wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
@@ -63,6 +64,9 @@ private:
 
 	std::unique_ptr<Powerup> pPowerup = std
 		::make_unique<Powerup>( Vec2( 9999.0f,9999.0f ),
+			false );
+	std::unique_ptr<Recharger> pRecharger = std
+		::make_unique<Recharger>( Vec2( 9999.0f,9999.0f ),
 			false );
 	bool started = false;
 	bool canStart = false;

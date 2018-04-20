@@ -244,6 +244,13 @@ void Hero::PowerUp()
 	}
 }
 
+void Hero::Heal()
+{
+	hp = hp + healAmount + rng.NextInt( -1,1 );
+
+	if( hp > maxHP ) hp = maxHP;
+}
+
 void Hero::Reset()
 {
 	hp = maxHP;
@@ -287,4 +294,9 @@ const float& Hero::GetDamage() const
 int Hero::GetHP() const
 {
 	return hp;
+}
+
+bool Hero::IsMaxHP() const
+{
+	return !( hp < maxHP );
 }

@@ -8,6 +8,7 @@
 #include "Powerup.h"
 #include <vector>
 #include <memory>
+#include "Recharger.h"
 
 struct DuoVec2
 {
@@ -29,7 +30,8 @@ public:
 	virtual void Draw( Graphics& gfx ) const;
 
 	virtual void Target( const Vec2& targetPos );
-	void Damage( float damage,Powerup* pPowerup,Random& rng );
+	void Damage( float damage,Powerup* pPowerup,
+		Recharger* pRecharger,Random& rng );
 	void Destroy( Powerup* pPowerup,Random& rng );
 	virtual void EndRoutine( std::vector<DuoVec2>& foodVec );
 
@@ -126,7 +128,7 @@ private:
 			Vec2{ ss,-ss },Vec2{ sc,0.0f },
 			Vec2{ ss,ss },Vec2{ 0.0f,sc },
 			Vec2{ -ss,ss },Vec2{ -sc,0.0f }
-		},Colors::MakeRGB( 255,69,0 )
+		},Colors::RedOrange
 	};
 };
 
@@ -153,6 +155,6 @@ private:
 			Vec2{ ms,-ms },Vec2{ mc,0.0f },
 			Vec2{ ms,ms },Vec2{ 0.0f,mc },
 			Vec2{ -ms,ms },Vec2{ -mc,0.0f }
-		},Colors::MakeRGB( 255,69,0 )
+		},Colors::RedOrange
 	};
 };

@@ -67,20 +67,21 @@ void Game::UpdateModel()
 	}
 	else
 	{
-		float speedupFactor = 3.0f;
-		if( wnd.kbd.KeyIsPressed( 'A' ) ) speedupFactor = 1.0f;
-		if( wnd.kbd.KeyIsPressed( 'D' ) ) speedupFactor = 5.0f;
-		if( wnd.kbd.KeyIsPressed( 'W' ) ) pPowerup->Reset( player.GetPos() );
+		float speedupFactor = 1.0f;
+		// float speedupFactor = 3.0f;
+		// if( wnd.kbd.KeyIsPressed( 'A' ) ) speedupFactor = 1.0f;
+		// if( wnd.kbd.KeyIsPressed( 'D' ) ) speedupFactor = 5.0f;
+		// if( wnd.kbd.KeyIsPressed( 'W' ) ) pPowerup->Reset( player.GetPos() );
 		// if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
 		// {
 		// 	int* pTest = new int[500000];
 		// }
 		if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
 		{
-			auto ff = level;
-			auto fb = nEnemies;
+			const auto ff = level;
+			const auto fb = nEnemies;
 
-			int fff = 2;
+			const int fff = 2;
 		}
 
 		const float dt = ft.Mark() * speedupFactor;
@@ -114,6 +115,9 @@ void Game::UpdateModel()
 			{
 				// ResetGame();
 				player.Attack();
+				// Don't get (possibly) infinite health
+				//  by running into enemies and getting
+				//  them to drop health.
 				e->Destroy( pPowerup.get(),rng );
 				if( player.GetHP() < 1 )
 				{
@@ -125,7 +129,8 @@ void Game::UpdateModel()
 			if( player <= ( e->GetRect() ) )
 			{
 				e->Damage( player.GetDamage(),
-					pPowerup.get(),rng );
+					pPowerup.get(),
+					pRecharger.get(),rng );
 			}
 
 			if( ( *e ) && Vec2{ e->GetPos() - player.GetPos() }
@@ -160,6 +165,8 @@ void Game::UpdateModel()
 		}
 
 		pPowerup->Update( dt );
+		pRecharger->Update( pPowerup.get(),
+			!player.IsMaxHP(),dt );
 
 		bool enemiesLeft = false;
 		for( const auto& e : foods )
@@ -174,6 +181,13 @@ void Game::UpdateModel()
 		{
 			player.PowerUp();
 			pPowerup->Reset( { 9999.0f,9999.0f } );
+		}
+
+		if( player.GetRect().IsOverlappingWith( pRecharger
+			->GetRect() ) )
+		{
+			player.Heal();
+			pRecharger->Reset( { 9999.0f,9999.0f } );
 		}
 	}
 }
@@ -202,6 +216,7 @@ void Game::AdvanceLevel()
 			dist1 = int( nEnemies * 0.05f );
 			dist2 = int( nEnemies * 0.07f );
 			dist3 = int( nEnemies * 0.03f );
+			nEnemies = int( float( nEnemies ) * 0.85f );
 		}
 		if( level > 8 )
 		{
@@ -227,12 +242,20 @@ void Game::AdvanceLevel()
 		}
 	}
 
-	nEnemies += int( float( nEnemies ) * 1.1f );
+	if( level <= 5 )
+	{
+		nEnemies += int( float( nEnemies ) * 1.1f );
+	}
+	else
+	{
+		nEnemies += int( float( nEnemies ) * 1.01f );
+	}
 }
 
 void Game::ResetGame()
 {
 	pPowerup->Reset( { 9999.0f,9999.0f } );
+	pRecharger->Reset( { 9999.0f,9999.0f } );
 	player.Reset();
 
 	level = 1;
@@ -252,7 +275,7 @@ void Game::ComposeFrame()
 #if DRAW_RELEASE_STUFF
 		SpriteCodex::DrawTitleScreen( gfx );
 #endif
-	}
+}
 	else
 	{
 		for( const auto& e : foods )
@@ -261,6 +284,7 @@ void Game::ComposeFrame()
 		}
 
 		pPowerup->Draw( gfx );
+		pRecharger->Draw( gfx );
 
 		player.Draw( gfx );
 		js.Draw( gfx );

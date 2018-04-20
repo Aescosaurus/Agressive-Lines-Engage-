@@ -21,15 +21,25 @@ void Food::Target( const Vec2& targetPos )
 	// Usually override this, but no error if you don't.
 }
 
-void Food::Damage( float damage,Powerup* pPowerup,Random& rng )
+void Food::Damage( float damage,Powerup* pPowerup,
+	Recharger* pRecharger,Random& rng )
 {
 	health -= damage;
 
-	if( health < 0.0f && rng.NextInt( 0,100 ) > 85 &&
-		!pPowerup->GetRect().IsContainedBy( Graphics
-		::GetScreenRect() ) )
+	if( health < 0.0f )
 	{
-		pPowerup->Reset( pos );
+		if( rng.NextInt( 0,100 ) > 85 &&
+			!pPowerup->GetRect().IsContainedBy( Graphics
+				::GetScreenRect() ) )
+		{
+			pPowerup->Reset( pos );
+		}
+		else if( rng.NextInt( 0,100 ) > 93 &&
+			!pRecharger->GetRect().IsContainedBy( Graphics
+				::GetScreenRect() ) )
+		{
+			pRecharger->Reset( pos );
+		}
 	}
 }
 
@@ -67,10 +77,10 @@ Food::operator bool() const
 Meatball::Meatball( Random& rng,const Vec2& playerPos )
 	:
 	Food( Vec2( rng.NextFloat( -float( Graphics::ScreenWidth ),
-	float( Graphics::ScreenWidth ) ),
-	rng.NextFloat( -float( Graphics::ScreenHeight ),
-	float( Graphics::ScreenHeight ) ) ) * 2.0f,
-	Vec2{ 40.0f,40.0f },17.0f )
+		float( Graphics::ScreenWidth ) ),
+		rng.NextFloat( -float( Graphics::ScreenHeight ),
+			float( Graphics::ScreenHeight ) ) ) * 2.0f,
+		Vec2{ 40.0f,40.0f },17.0f )
 {
 	hitbox.MoveTo( pos - size / 2.0f );
 	while( hitbox.IsContainedBy( Graphics::GetScreenRect() ) )
@@ -78,7 +88,7 @@ Meatball::Meatball( Random& rng,const Vec2& playerPos )
 		pos = Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
 			float( Graphics::ScreenWidth ) ),
 			rng.NextFloat( -float( Graphics::ScreenHeight ),
-			float( Graphics::ScreenHeight ) ) } *2.0f;
+				float( Graphics::ScreenHeight ) ) } *2.0f;
 
 		hitbox.MoveTo( pos - size / 2.0f );
 	}
@@ -145,10 +155,10 @@ void Meatball::Target( const Vec2& target )
 Pasta::Pasta( Random& rng )
 	:
 	Food( Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
-	float( Graphics::ScreenWidth ) ),
-	rng.NextFloat( -float( Graphics::ScreenHeight ),
-	float( Graphics::ScreenHeight ) ) } *2.0f,
-	Vec2{ 30.0f,30.0f },10.0f )
+		float( Graphics::ScreenWidth ) ),
+		rng.NextFloat( -float( Graphics::ScreenHeight ),
+			float( Graphics::ScreenHeight ) ) } *2.0f,
+		Vec2{ 30.0f,30.0f },10.0f )
 {
 	hitbox.MoveTo( pos - size / 2.0f );
 	while( hitbox.IsContainedBy( Graphics::GetScreenRect() ) )
@@ -156,7 +166,7 @@ Pasta::Pasta( Random& rng )
 		pos = Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
 			float( Graphics::ScreenWidth ) ),
 			rng.NextFloat( -float( Graphics::ScreenHeight ),
-			float( Graphics::ScreenHeight ) ) } *2.0f;
+				float( Graphics::ScreenHeight ) ) } *2.0f;
 
 		hitbox.MoveTo( pos - size / 2.0f );
 	}
@@ -202,7 +212,7 @@ Orange::Orange( Random& rng )
 			::ScreenWidth ) - size.x );
 		pos.y = rng.NextFloat( float( Graphics
 			::ScreenHeight ) + size.y,float( Graphics
-			::ScreenHeight ) + size.y * 4.0f );
+				::ScreenHeight ) + size.y * 4.0f );
 		vel = { 0.0f,-1.0f };
 	}
 	else if( chance > 25 )
@@ -218,7 +228,7 @@ Orange::Orange( Random& rng )
 			::ScreenHeight ) - size.y );
 		pos.x = rng.NextFloat( float( Graphics
 			::ScreenWidth ) + size.x,float( Graphics
-			::ScreenWidth ) + size.x * 4.0f );
+				::ScreenWidth ) + size.x * 4.0f );
 		vel = { -1.0f,0.0f };
 	}
 }
@@ -243,10 +253,10 @@ void Orange::Draw( Graphics& gfx ) const
 
 void Orange::EndRoutine( std::vector<DuoVec2>& foodVec )
 {
-	foodVec.emplace_back( DuoVec2( pos,Vec2(  0.0f,-1.0f ) ) );
-	foodVec.emplace_back( DuoVec2( pos,Vec2(  0.0f,1.0f ) ) );
-	foodVec.emplace_back( DuoVec2( pos,Vec2(  -1.0f,0.0f ) ) );
-	foodVec.emplace_back( DuoVec2( pos,Vec2(  1.0f,0.0f ) ) );
+	foodVec.emplace_back( DuoVec2( pos,Vec2( 0.0f,-1.0f ) ) );
+	foodVec.emplace_back( DuoVec2( pos,Vec2( 0.0f,1.0f ) ) );
+	foodVec.emplace_back( DuoVec2( pos,Vec2( -1.0f,0.0f ) ) );
+	foodVec.emplace_back( DuoVec2( pos,Vec2( 1.0f,0.0f ) ) );
 }
 
 void Orange::Target( const Vec2& playerPos )
