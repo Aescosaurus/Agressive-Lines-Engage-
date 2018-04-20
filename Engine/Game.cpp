@@ -67,7 +67,23 @@ void Game::UpdateModel()
 	}
 	else
 	{
-		const float dt = ft.Mark();
+		float speedupFactor = 3.0f;
+		if( wnd.kbd.KeyIsPressed( 'A' ) ) speedupFactor = 1.0f;
+		if( wnd.kbd.KeyIsPressed( 'D' ) ) speedupFactor = 5.0f;
+		if( wnd.kbd.KeyIsPressed( 'W' ) ) pPowerup->Reset( player.GetPos() );
+		// if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
+		// {
+		// 	int* pTest = new int[500000];
+		// }
+		if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
+		{
+			auto ff = level;
+			auto fb = nEnemies;
+
+			int fff = 2;
+		}
+
+		const float dt = ft.Mark() * speedupFactor;
 
 		if( wnd.mouse.RightIsPressed() )
 		{
@@ -151,10 +167,7 @@ void Game::UpdateModel()
 			enemiesLeft = true;
 			break;
 		}
-		if( !enemiesLeft )
-		{
-			AdvanceLevel();
-		}
+		if( !enemiesLeft ) AdvanceLevel();
 
 		if( player.GetRect().IsOverlappingWith( pPowerup
 			->GetRect() ) )
@@ -162,20 +175,15 @@ void Game::UpdateModel()
 			player.PowerUp();
 			pPowerup->Reset( { 9999.0f,9999.0f } );
 		}
-
-		// if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
-		// {
-		// 	int* pTest = new int[500000];
-		// }
 	}
 }
 
 void Game::AdvanceLevel()
 {
 	++level;
-	int dist1;
-	int dist2;
-	int dist3;
+	int dist1 = 0;
+	int dist2 = 0;
+	int dist3 = 0;
 	{
 		if( level > 0 )
 		{
@@ -185,15 +193,15 @@ void Game::AdvanceLevel()
 		}
 		if( level > 3 )
 		{
-			dist1 = int( nEnemies * 0.7f );
-			dist2 = int( nEnemies * 0.3f );
+			dist1 = int( nEnemies * 0.35f );
+			dist2 = int( nEnemies * 0.15f );
 			dist3 = int( nEnemies * 0.0f );
 		}
 		if( level > 5 )
 		{
-			dist1 = int( nEnemies * 0.5f );
-			dist2 = int( nEnemies * 0.3f );
-			dist3 = int( nEnemies * 0.2f );
+			dist1 = int( nEnemies * 0.05f );
+			dist2 = int( nEnemies * 0.07f );
+			dist3 = int( nEnemies * 0.03f );
 		}
 		if( level > 8 )
 		{

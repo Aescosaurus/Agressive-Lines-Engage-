@@ -167,6 +167,7 @@ void Hero::Update( const Mouse& ms,float dt )
 		else
 		{
 			it = bullets.erase( it );
+			if( it == bullets.end() ) return;
 		}
 	}
 
@@ -200,8 +201,15 @@ void Hero::Draw( Graphics& gfx )
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-	shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
-	shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+	{
+		shield.MoveBy( Vec2( -1.0f,-1.0f ) );
+		shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+		shield.MoveBy( Vec2( 1.0f,1.0f ) );
+		shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+		shield.MoveBy( Vec2( 1.0f,1.0f ) );
+		shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+	}
+	
 
 	for( const Bullet& b : bullets )
 	{
@@ -244,6 +252,7 @@ void Hero::Reset()
 	powerdownTimer = 0.0f;
 	pos = Vec2{ float( Graphics::ScreenWidth / 2 ),
 		float( Graphics::ScreenHeight / 2 ) };
+	pt = PowerupType::None;
 	vel = Vec2{ 0.0f,0.0f };
 	hitbox.MoveTo( pos );
 	shape.MoveTo( pos );

@@ -106,7 +106,7 @@ private:
 			Vec2( sh,-sh ),Vec2( ss,0.0f ),
 			Vec2( sh,sh ),Vec2( 0.0f,ss ),
 			Vec2( -sh,sh ),Vec2( -ss,0.0f )
-		},Colors::Blue
+		},Colors::LightBlue
 	};
 	Rect hitbox;
 };

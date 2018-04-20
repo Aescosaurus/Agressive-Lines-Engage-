@@ -38,6 +38,11 @@ void Poly::MoveTo( const Vec2& pos )
 	this->pos = pos;
 }
 
+void Poly::MoveBy( const Vec2& offset )
+{
+	pos += offset;
+}
+
 void Poly::Rotate( float amount )
 {
 	angle += amount;

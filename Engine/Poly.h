@@ -17,6 +17,7 @@ public:
 	void DrawTransparent( float alpha,Graphics& gfx ) const;
 
 	void MoveTo( const Vec2& pos );
+	void MoveBy( const Vec2& offset );
 
 	void Rotate( float amount );
 	void SetRotation( float amount );
