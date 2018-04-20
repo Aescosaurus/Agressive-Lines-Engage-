@@ -249,6 +249,16 @@ void Orange::EndRoutine( std::vector<DuoVec2>& foodVec )
 	foodVec.emplace_back( DuoVec2( pos,Vec2(  1.0f,0.0f ) ) );
 }
 
+void Orange::Target( const Vec2& playerPos )
+{
+	if( !hitbox.IsOverlappingWith( Graphics::GetScreenRect()
+		.GetExpanded( 10.0f ) ) )
+	{
+		const Vec2 diff = pos - playerPos;
+		vel = diff.GetNormalized() * -1.0f;
+	}
+}
+
 Orange::Orange( const Vec2& pos,const Vec2& size,float hp )
 	:
 	Food( pos,size,hp )

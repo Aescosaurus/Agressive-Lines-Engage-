@@ -57,7 +57,7 @@ public:
 	void Update( Random& rng,const Vec2& playerPos,float dt );
 	void Draw( Graphics& gfx ) const override;
 
-	void Target( const Vec2& target );
+	void Target( const Vec2& target ) override;
 private:
 	Meatball( const Vec2& pos );
 private:
@@ -110,6 +110,7 @@ public:
 	virtual void Draw( Graphics& gfx ) const override;
 
 	void EndRoutine( std::vector<DuoVec2>& foodVec ) override;
+	void Target( const Vec2& playerPos ) override;
 protected:
 	Orange( const Vec2& pos,const Vec2& size,float hp );
 protected:
