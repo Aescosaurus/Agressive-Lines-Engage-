@@ -296,5 +296,13 @@ void Game::ComposeFrame()
 
 		player.Draw( gfx );
 		js.Draw( gfx );
+		
+		consolas.DrawText( "Wave " + std::to_string( level - 1 ),
+			{ Graphics::ScreenWidth -
+			115,130 },Colors::Cyan,gfx );
+
+		consolas.DrawText( "Enemies\n" + std::to_string( foods.size() ),
+			{ Graphics::ScreenWidth -
+			115,160 },Colors::Red,gfx );
 	}
 }

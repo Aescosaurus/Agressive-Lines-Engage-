@@ -32,6 +32,7 @@
 #include "Powerup.h"
 #include <memory>
 #include "Recharger.h"
+#include "Font.h"
 
 class Game
 {
@@ -55,6 +56,7 @@ private:
 	/*  User Variables              */
 	Random rng;
 	FrameTimer ft;
+	Font consolas = Font( "Fonts/Consolas.bmp" );
 	Joystick js;
 	Hero player;
 
