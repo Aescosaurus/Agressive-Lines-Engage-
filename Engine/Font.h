@@ -9,9 +9,12 @@
 class Font
 {
 public:
+	Font();
 	Font( const std::string& fileName,Color chroma = Colors::White );
 	
 	void DrawText( const std::string& text,const Vec2& pos,Color color,Graphics& gfx ) const;
+
+	Surface& GetSprite();
 private:
 	Rect MapGlyphRect( char c ) const;
 private:

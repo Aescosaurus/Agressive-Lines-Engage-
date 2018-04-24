@@ -20,6 +20,8 @@
  ******************************************************************************************/
 #pragma once
 
+#include "META.h"
+
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
@@ -56,7 +58,11 @@ private:
 	/*  User Variables              */
 	Random rng;
 	FrameTimer ft;
+#if DRAW_RELEASE_STUFF
+	Font consolas;
+#else
 	Font consolas = Font( "Fonts/Consolas.bmp" );
+#endif
 	Joystick js;
 	Hero player;
 

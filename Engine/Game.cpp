@@ -18,9 +18,6 @@
  *	You should have received a copy of the GNU General Public License					  *
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
- // Change to true for final build, false for building(it lags you a lot).
-#include "META.h"
-
 #include "MainWindow.h"
 #include "Game.h"
 #if DRAW_RELEASE_STUFF
@@ -35,6 +32,9 @@ Game::Game( MainWindow& wnd )
 	player( Vec2{ float( Graphics::ScreenWidth ),
 		float( Graphics::ScreenHeight ) } / 2.0f )
 {
+#if DRAW_RELEASE_STUFF
+	SpriteCodex::InitFontSheet( consolas );
+#endif
 }
 
 void Game::Go()
@@ -68,10 +68,11 @@ void Game::UpdateModel()
 	else
 	{
 		float speedupFactor = 1.0f;
-		// float speedupFactor = 3.0f;
-		// if( wnd.kbd.KeyIsPressed( 'A' ) ) speedupFactor = 1.0f;
-		// if( wnd.kbd.KeyIsPressed( 'D' ) ) speedupFactor = 5.0f;
-		// if( wnd.kbd.KeyIsPressed( 'W' ) ) pPowerup->Reset( player.GetPos() );
+#if !DRAW_RELEASE_STUFF
+		speedupFactor = 3.0f;
+		if( wnd.kbd.KeyIsPressed( 'A' ) ) speedupFactor = 1.0f;
+		if( wnd.kbd.KeyIsPressed( 'D' ) ) speedupFactor = 5.0f;
+		if( wnd.kbd.KeyIsPressed( 'W' ) ) pRecharger->Reset( player.GetPos() );
 		// if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
 		// {
 		// 	int* pTest = new int[500000];
@@ -83,14 +84,13 @@ void Game::UpdateModel()
 
 			const int fff = 2;
 		}
-
-		const float dt = ft.Mark() * speedupFactor;
-
 		if( wnd.mouse.RightIsPressed() )
 		{
 			foods.emplace_back( std
 				::make_unique<Orange>( rng ) );
 		}
+#endif
+		const float dt = ft.Mark() * speedupFactor;
 		js.Update( wnd.mouse );
 		player += js.GetDir();
 		player.Update( wnd.mouse,dt );
@@ -216,13 +216,14 @@ void Game::AdvanceLevel()
 			dist1 = int( nEnemies * 0.05f );
 			dist2 = int( nEnemies * 0.07f );
 			dist3 = int( nEnemies * 0.03f );
-			nEnemies = int( float( nEnemies ) * 0.85f );
+			nEnemies = int( float( nEnemies ) * 0.75f );
 		}
 		if( level > 8 )
 		{
 			dist1 = int( nEnemies * 0.3f );
 			dist2 = int( nEnemies * 0.4f );
 			dist3 = int( nEnemies * 0.3f );
+			nEnemies = int( float( nEnemies ) * 0.55f );
 		}
 	}
 
@@ -248,11 +249,11 @@ void Game::AdvanceLevel()
 	}
 	else if( level <= 7 )
 	{
-		nEnemies += int( float( nEnemies ) * 1.01f );
+		nEnemies += int( float( nEnemies ) * 1.005f );
 	}
 	else if( level <= 10 )
 	{
-		nEnemies += int( float( nEnemies ) * 1.0005 );
+		nEnemies += int( float( nEnemies ) * 1.0001 );
 	}
 	else
 	{
@@ -296,7 +297,7 @@ void Game::ComposeFrame()
 
 		player.Draw( gfx );
 		js.Draw( gfx );
-		
+
 		consolas.DrawText( "Wave " + std::to_string( level - 1 ),
 			{ Graphics::ScreenWidth -
 			115,130 },Colors::Cyan,gfx );
