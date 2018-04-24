@@ -59,7 +59,7 @@ void Hero::Bullet::Draw( Graphics& gfx ) const
 	shape.Draw( gfx );
 	shape.Draw( gfx );
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
@@ -89,7 +89,6 @@ Hero::Hero( const Vec2& pos )
 
 void Hero::operator+=( const Vec2& moveAmount )
 {
-	// pos += moveAmount;
 	vel = moveAmount;
 	shape.SetRotation( vel.GetAngle() );
 }
@@ -158,16 +157,17 @@ void Hero::Update( const Mouse& ms,float dt )
 {
 	shotTimer += dt;
 
-	for( size_t i = 0; i < bullets.size(); ++i )
+	for( auto& it = bullets.begin(); it < bullets.end(); ++it )
 	{
-		if( bullets[i] )
+		auto& b = *it;
+		if( b )
 		{
-			bullets[i].Update( dt );
+			b.Update( dt );
 		}
 		else
 		{
-			bullets.erase( bullets.begin() + i );
-			--i; // Really important!
+			it = bullets.erase( it );
+			if( it == bullets.end() ) return;
 		}
 	}
 
@@ -192,23 +192,31 @@ void Hero::Update( const Mouse& ms,float dt )
 	while( int( pos.y + size.y ) > Graphics::ScreenHeight ) pos.y -= incAmount;
 
 	shape.MoveTo( pos );
+	shield.MoveTo( pos );
 	hitbox.MoveTo( pos - size / 2.0f );
 }
 
 void Hero::Draw( Graphics& gfx )
 {
-	// const Vec2 dPos = pos - size / 2.0f;
-	// gfx.DrawRect( int( dPos.x ),int( dPos.y ),
-	// 	int( size.x ),int( size.y ),Colors::Cyan );
 	shape.Draw( gfx );
 	shape.Draw( gfx );
+
+	{
+		shield.MoveBy( Vec2( -1.0f,-1.0f ) );
+		shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+		shield.MoveBy( Vec2( 1.0f,1.0f ) );
+		shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+		shield.MoveBy( Vec2( 1.0f,1.0f ) );
+		shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
+	}
+	
 
 	for( const Bullet& b : bullets )
 	{
 		b.Draw( gfx );
 	}
 
-#if !DRAW_DEBUG_STUFF
+#if !DRAW_RELEASE_STUFF
 	gfx.DrawHitbox( hitbox );
 #endif
 }
@@ -236,17 +244,31 @@ void Hero::PowerUp()
 	}
 }
 
+void Hero::Heal()
+{
+	hp = hp + healAmount + rng.NextInt( -1,1 );
+
+	if( hp > maxHP ) hp = maxHP;
+}
+
 void Hero::Reset()
 {
+	hp = maxHP;
 	powerupActive = false;
 	shotTimer = 0.0f;
 	powerdownTimer = 0.0f;
 	pos = Vec2{ float( Graphics::ScreenWidth / 2 ),
 		float( Graphics::ScreenHeight / 2 ) };
+	pt = PowerupType::None;
 	vel = Vec2{ 0.0f,0.0f };
 	hitbox.MoveTo( pos );
 	shape.MoveTo( pos );
 	shape.SetColor( Colors::Cyan );
+}
+
+void Hero::Attack()
+{
+	--hp;
 }
 
 const Vec2& Hero::GetPos() const
@@ -267,4 +289,14 @@ const float& Hero::GetRange() const
 const float& Hero::GetDamage() const
 {
 	return damage;
+}
+
+int Hero::GetHP() const
+{
+	return hp;
+}
+
+bool Hero::IsMaxHP() const
+{
+	return !( hp < maxHP );
 }

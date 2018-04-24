@@ -26,6 +26,7 @@
 #include "Colors.h"
 #include "Surface.h"
 #include "Rect.h"
+#include <cassert>
 
 class Graphics
 {
@@ -61,18 +62,100 @@ public:
 	void PutPixel( int x,int y,Color c );
 	void PutPixel( int x,int y,Color c,unsigned char alpha );
 	void PutPixel( int x,int y,Color c,float alpha );
+	void PutPixelT( int x,int y,Color c,float alpha );
 	void DrawRect( int x,int y,int width,int height,Color c );
 	void DrawRectDim( int x1,int y1,int x2,int y2,Color c );
 	void DrawRectSafe( int x,int y,int width,int height,Color c );
 	void DrawCircle( int x,int y,int radius,Color c );
 	void DrawCircleSafe( int x,int y,int radius,Color c );
 	void DrawLine( int x0,int y0,int x1,int y1,Color c );
+	void DrawTransparentLine( const Vec2& pos1,const Vec2& pos2,float alpha,Color c );
 	void DrawSpriteNonChroma( int x,int y,const Surface& s );
 	void DrawSpriteNonChroma( int x,int y,const Rect& srcRect,const Surface& s );
 	void DrawSpriteNonChroma( int x,int y,Rect srcRect,const Rect& clip,const Surface& s );
 	void DrawSprite( int x,int y,const Surface& s,Color chroma = Colors::Magenta );
 	void DrawSprite( int x,int y,const Rect& srcRect,const Surface& s,Color chroma = Colors::Magenta );
 	void DrawSprite( int x,int y,Rect srcRect,const Rect& clip,const Surface& s,Color chroma = Colors::Magenta );
+	template<typename E>
+	void DrawSprite( int x,int y,Rect srcRect,const Rect& clip,const Surface& s,E effect,bool reversed = false )
+	{
+		assert( srcRect.left >= 0 );
+		assert( srcRect.right <= s.GetWidth() );
+		assert( srcRect.top >= 0 );
+		assert( srcRect.bottom <= s.GetHeight() );
+
+		// Mirror in x depending on reversed bool switch.
+		if( !reversed )
+		{
+			// Clipping is different depending on mirroring status.
+			if( x < int( clip.left ) )
+			{
+				srcRect.left += clip.left - float( x );
+				x = int( clip.left );
+			}
+			if( y < int( clip.top ) )
+			{
+				srcRect.top += clip.top - float( y );
+				y = int( clip.top );
+			}
+			if( float( x ) + srcRect.GetWidth() > clip.right )
+			{
+				srcRect.right -= float( x ) + srcRect.GetWidth() - clip.right;
+			}
+			if( float( y ) + srcRect.GetHeight() > clip.bottom )
+			{
+				srcRect.bottom -= float( y ) + srcRect.GetHeight() - clip.bottom;
+			}
+			for( int sy = int( srcRect.top ); sy < int( srcRect.bottom ); sy++ )
+			{
+				for( int sx = int( srcRect.left ); sx < int( srcRect.right ); sx++ )
+				{
+					effect(
+						// No mirroring!
+						s.GetPixel( sx,sy ),
+						int( float( x + sx ) - srcRect.left ),
+						int( float( y + sy ) - srcRect.top ),
+						*this
+					);
+				}
+			}
+		}
+		else
+		{
+			if( float( x ) < clip.left )
+			{
+				srcRect.right -= clip.left - float( x );
+				x = int( clip.left );
+			}
+			if( float( y ) < clip.top )
+			{
+				srcRect.top += clip.top - float( y );
+				y = int( clip.top );
+			}
+			if( float( x ) + srcRect.GetWidth() > clip.right )
+			{
+				srcRect.left += float( x ) + srcRect.GetWidth() - clip.right;
+			}
+			if( float( y ) + srcRect.GetHeight() > clip.bottom )
+			{
+				srcRect.bottom -= float( y ) + srcRect.GetHeight() - clip.bottom;
+			}
+			const int xOffset = int( srcRect.left + srcRect.right - 1.0f );
+			for( int sy = int( srcRect.top ); sy < int( srcRect.bottom ); sy++ )
+			{
+				for( int sx = int( srcRect.left ); int( sx < srcRect.right ); sx++ )
+				{
+					effect(
+						// Mirror in x.
+						s.GetPixel( xOffset - sx,sy ),
+						int( float( x + sx ) - srcRect.left ),
+						int( float( y + sy ) - srcRect.top ),
+						*this
+					);
+				}
+			}
+		}
+	}
 	void DrawHitbox( const Rect& hitbox,Color c = Colors::MakeRGB( 255,160,0 ) );
 	~Graphics();
 private:

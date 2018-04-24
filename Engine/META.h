@@ -1,1 +1,1 @@
-#define DRAW_DEBUG_STUFF false
+#define DRAW_RELEASE_STUFF NDEBUG

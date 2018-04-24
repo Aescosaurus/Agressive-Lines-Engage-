@@ -117,6 +117,22 @@ void Surface::PutPixel( int x,int y,Color c )
 	pPixels[y * width + x] = c;
 }
 
+void Surface::PutPixel( int x,int y,int r,int g,int b )
+{
+	PutPixel( x,y,Colors::MakeRGB( r,g,b ) );
+}
+
+void Surface::Fill( Color c )
+{
+	for( int y = 0; y < height; ++y )
+	{
+		for( int x = 0; x < width; ++x )
+		{
+			pPixels[y * width + x] = c;
+		}
+	}
+}
+
 Color Surface::GetPixel( int x,int y ) const
 {
 	assert( x >= 0 );

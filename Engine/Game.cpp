@@ -18,12 +18,9 @@
  *	You should have received a copy of the GNU General Public License					  *
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
- // Change to true for final build, false for building(it lags you a lot).
-#include "META.h"
-
 #include "MainWindow.h"
 #include "Game.h"
-#if DRAW_DEBUG_STUFF
+#if DRAW_RELEASE_STUFF
 #include "SpriteCodex.h"
 #endif
 
@@ -33,19 +30,11 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	js( Vec2{ float( Graphics::ScreenWidth - 70 ),70.0f } ),
 	player( Vec2{ float( Graphics::ScreenWidth ),
-	float( Graphics::ScreenHeight ) } / 2.0f ),
-	pPowerup( new Powerup{ Vec2{ -9999.0f,-9999.0f },false } )
+		float( Graphics::ScreenHeight ) } / 2.0f )
 {
-}
-
-Game::~Game()
-{
-	// for( const Meatball* m : pMeatballs )
-	// {
-	// 	delete m;
-	// }
-	// 
-	// delete pPowerup;
+#if DRAW_RELEASE_STUFF
+	SpriteCodex::InitFontSheet( consolas );
+#endif
 }
 
 void Game::Go()
@@ -78,13 +67,30 @@ void Game::UpdateModel()
 	}
 	else
 	{
-		const float dt = ft.Mark();
+		float speedupFactor = 1.0f;
+#if !DRAW_RELEASE_STUFF
+		speedupFactor = 3.0f;
+		if( wnd.kbd.KeyIsPressed( 'A' ) ) speedupFactor = 1.0f;
+		if( wnd.kbd.KeyIsPressed( 'D' ) ) speedupFactor = 5.0f;
+		if( wnd.kbd.KeyIsPressed( 'W' ) ) pRecharger->Reset( player.GetPos() );
+		// if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
+		// {
+		// 	int* pTest = new int[500000];
+		// }
+		if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
+		{
+			const auto ff = level;
+			const auto fb = nEnemies;
 
+			const int fff = 2;
+		}
 		if( wnd.mouse.RightIsPressed() )
 		{
 			foods.emplace_back( std
-				::make_unique<Orange>( rng ) );
+				::make_unique<Orange>() );
 		}
+#endif
+		const float dt = ft.Mark() * speedupFactor;
 		js.Update( wnd.mouse );
 		player += js.GetDir();
 		player.Update( wnd.mouse,dt );
@@ -93,31 +99,54 @@ void Game::UpdateModel()
 		Food* playerTarget = nullptr;
 		bool targetSet = false;
 		float minDist = 99999999.0f;
-		// for( size_t i = 0; i < meatballs.size(); ++i )
 		std::vector<DuoVec2> tempVec;
-		for( auto it = foods.begin(); it < foods.end(); ++it )
+		for( auto it = foods.begin();
+			it < foods.end();
+			++it )
 		{
-			// Meatball& m = meatballs[i];
 			auto& e = *it;
 
-			// m.Target( player.GetPos() );
 			e->Target( player.GetPos() );
-			// m.Update( rng,dt );
-			e->Update( rng,player.GetPos(),dt );
 
-			// if( player.GetRect().IsOverlappingWith( m.GetRect() ) )
+			e->Update( player.GetPos(),dt );
+
 			if( player.GetRect()
 				.IsOverlappingWith( e->GetRect() ) )
 			{
-				ResetGame();
-				return;
+				// ResetGame();
+				player.Attack();
+				// Don't get (possibly) infinite health
+				//  by running into enemies and getting
+				//  them to drop health.
+				e->Destroy( pPowerup.get() );
+				if( player.GetHP() < 1 )
+				{
+					ResetGame();
+					return;
+				}
 			}
 
-			// if( player <= ( m.GetRect() ) )
+			{
+				const Rect& sRect = Graphics::GetScreenRect();
+				const Rect& eRect = e->GetRect();
+				if( eRect.IsContainedBy( sRect ) )
+				{
+					for( const std::unique_ptr<Food>& f : foods )
+					{
+						const Rect& fRect = f->GetRect();
+						if( &f != &e && fRect.IsOverlappingWith( eRect ) )
+						{
+							e->Reset( player.GetPos() );
+						}
+					}
+				}
+			}
+
 			if( player <= ( e->GetRect() ) )
 			{
 				e->Damage( player.GetDamage(),
-					pPowerup.get(),rng );
+					pPowerup.get(),
+					pRecharger.get() );
 			}
 
 			if( ( *e ) && Vec2{ e->GetPos() - player.GetPos() }
@@ -141,27 +170,27 @@ void Game::UpdateModel()
 
 		for( const auto& x : tempVec )
 		{
-			foods.emplace_back( std::make_unique<OrangeSlice>( x ) );
+			foods.emplace_back( std
+				::make_unique<OrangeSlice>( x ) );
 		}
 
-		if( targetSet && minDist < player.GetRange() * player.GetRange() )
+		if( targetSet && minDist < player.GetRange() *
+			player.GetRange() )
 		{
 			player >> playerTarget->GetPos();
 		}
 
 		pPowerup->Update( dt );
+		pRecharger->Update( pPowerup.get(),
+			!player.IsMaxHP(),dt );
 
 		bool enemiesLeft = false;
-		// for( const Meatball& m : meatballs )
 		for( const auto& e : foods )
 		{
 			enemiesLeft = true;
 			break;
 		}
-		if( !enemiesLeft )
-		{
-			AdvanceLevel();
-		}
+		if( !enemiesLeft ) AdvanceLevel();
 
 		if( player.GetRect().IsOverlappingWith( pPowerup
 			->GetRect() ) )
@@ -170,31 +199,87 @@ void Game::UpdateModel()
 			pPowerup->Reset( { 9999.0f,9999.0f } );
 		}
 
-		// if( wnd.kbd.KeyIsPressed( VK_SPACE ) )
-		// {
-		// 	int* pTest = new int[500000];
-		// }
+		if( player.GetRect().IsOverlappingWith( pRecharger
+			->GetRect() ) )
+		{
+			player.Heal();
+			pRecharger->Reset( { 9999.0f,9999.0f } );
+		}
 	}
 }
 
 void Game::AdvanceLevel()
 {
 	++level;
-	for( int i = 0; i < int( nEnemies * 0.6f ); ++i )
+	int dist1 = 0;
+	int dist2 = 0;
+	int dist3 = 0;
 	{
-		foods.emplace_back( std::make_unique<Meatball>( rng,
-			player.GetPos() ) );
+		if( level > 0 )
+		{
+			dist1 = int( nEnemies * 1.0f );
+			dist2 = int( nEnemies * 0.0f );
+			dist3 = int( nEnemies * 0.0f );
+		}
+		if( level > 3 )
+		{
+			dist1 = int( nEnemies * 0.35f );
+			dist2 = int( nEnemies * 0.15f );
+			dist3 = int( nEnemies * 0.0f );
+		}
+		if( level > 5 )
+		{
+			dist1 = int( nEnemies * 0.05f );
+			dist2 = int( nEnemies * 0.07f );
+			dist3 = int( nEnemies * 0.03f );
+			nEnemies = int( float( nEnemies ) * 0.75f );
+		}
+		if( level > 8 )
+		{
+			dist1 = int( nEnemies * 0.3f );
+			dist2 = int( nEnemies * 0.4f );
+			dist3 = int( nEnemies * 0.3f );
+			nEnemies = int( float( nEnemies ) * 0.55f );
+		}
 	}
-	for( int i = 0; i < int( nEnemies * 0.4f ); ++i )
+
 	{
-		foods.emplace_back( std::make_unique<Pasta>( rng ) );
+		for( int i = 0; i < dist1; ++i )
+		{
+			foods.emplace_back( std::make_unique<Meatball>( player.GetPos() ) );
+		}
+		for( int i = 0; i < dist2; ++i )
+		{
+			foods.emplace_back( std::make_unique<Pasta>() );
+		}
+		for( int i = 0; i < dist3; ++i )
+		{
+			foods.emplace_back( std::make_unique<Orange>() );
+		}
 	}
-	nEnemies += int( float( nEnemies ) * 1.1f );
+
+	if( level <= 5 )
+	{
+		nEnemies += int( float( nEnemies ) * 1.1f );
+	}
+	else if( level <= 7 )
+	{
+		nEnemies += int( float( nEnemies ) * 1.005f );
+	}
+	else if( level <= 10 )
+	{
+		nEnemies += int( float( nEnemies ) * 1.0001 );
+	}
+	else
+	{
+		++nEnemies;
+	}
 }
 
 void Game::ResetGame()
 {
 	pPowerup->Reset( { 9999.0f,9999.0f } );
+	pRecharger->Reset( { 9999.0f,9999.0f } );
 	player.Reset();
 
 	level = 1;
@@ -203,8 +288,6 @@ void Game::ResetGame()
 	started = false;
 	canStart = false;
 
-	// meatballs.clear();
-	// pastas.clear();
 	foods.clear();
 	js.Reset();
 }
@@ -213,21 +296,29 @@ void Game::ComposeFrame()
 {
 	if( !started )
 	{
-#if DRAW_DEBUG_STUFF
+#if DRAW_RELEASE_STUFF
 		SpriteCodex::DrawTitleScreen( gfx );
 #endif
 }
 	else
 	{
-		// for( const Meatball& m : meatballs )
 		for( const auto& e : foods )
 		{
 			e->Draw( gfx );
 		}
 
 		pPowerup->Draw( gfx );
+		pRecharger->Draw( gfx );
 
 		player.Draw( gfx );
 		js.Draw( gfx );
+
+		consolas.DrawText( "Wave " + std::to_string( level - 1 ),
+			{ Graphics::ScreenWidth -
+			115,130 },Colors::Cyan,gfx );
+
+		consolas.DrawText( "Enemies\n" + std::to_string( foods.size() ),
+			{ Graphics::ScreenWidth -
+			115,160 },Colors::Red,gfx );
 	}
 }

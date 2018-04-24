@@ -20,9 +20,27 @@ void Poly::Draw( Graphics& gfx ) const
 	gfx.DrawLine( int( pos1.x ),int( pos1.y ),int( pos2.x ),int( pos2.y ),c );
 }
 
+void Poly::DrawTransparent( float alpha,Graphics& gfx ) const
+{
+	for( auto i = vertices.begin(),end = vertices.end() - 1; i != end; ++i )
+	{
+		const Vec2 pos1 = i->Rotation( angle ) + pos;
+		const Vec2 pos2 = ( i + 1 )->Rotation( angle ) + pos;
+		gfx.DrawTransparentLine( pos1,pos2,alpha,c );
+	}
+	const Vec2 pos1 = vertices.back().Rotation( angle ) + pos;
+	const Vec2 pos2 = vertices.front().Rotation( angle ) + pos;
+	gfx.DrawTransparentLine( pos1,pos2,alpha,c );
+}
+
 void Poly::MoveTo( const Vec2& pos )
 {
 	this->pos = pos;
+}
+
+void Poly::MoveBy( const Vec2& offset )
+{
+	pos += offset;
 }
 
 void Poly::Rotate( float amount )
