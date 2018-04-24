@@ -132,3 +132,9 @@ Vec2 Vec2::Right()
 {
 	return Vec2{ 1.0f,0.0f };
 }
+
+Vec2 Vec2::GetUnit( float angle )
+{
+	const float rAngle = angle * ( 3.1415f / 180.0f );
+	return( Vec2( std::cos( rAngle ),std::sin( rAngle ) ) );
+}

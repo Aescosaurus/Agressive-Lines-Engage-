@@ -68,7 +68,7 @@ public:
 	void DrawRectSafe( int x,int y,int width,int height,Color c );
 	void DrawCircle( int x,int y,int radius,Color c );
 	void DrawCircleSafe( int x,int y,int radius,Color c );
-	void DrawLine( int x0,int y0,int x1,int y1,Color c );
+	void DrawLine( int x1,int y1,int x2,int y2,Color c );
 	void DrawTransparentLine( const Vec2& pos1,const Vec2& pos2,float alpha,Color c );
 	void DrawSpriteNonChroma( int x,int y,const Surface& s );
 	void DrawSpriteNonChroma( int x,int y,const Rect& srcRect,const Surface& s );

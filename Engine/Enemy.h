@@ -169,3 +169,21 @@ private:
 		},Colors::RedOrange
 	};
 };
+
+class Lime
+	:
+	public Food
+{
+public:
+	Lime();
+	Lime( const Lime& other );
+	Lime& operator=( const Lime& other );
+
+	void Update( const Vec2& playerPos,float dt );
+	
+	void Reset( const Vec2& playerPos );
+private:
+	static constexpr float speed = 50.0f;
+	Vec2 vel = { 0.0f,0.0f };
+	float angle = 90.0f;
+};

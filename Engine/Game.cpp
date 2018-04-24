@@ -53,6 +53,7 @@ void Game::UpdateModel()
 		// Bop!
 		wnd.Kill();
 	}
+
 	if( !started )
 	{
 		if( wnd.mouse.LeftIsPressed() )
@@ -87,7 +88,7 @@ void Game::UpdateModel()
 		if( wnd.mouse.RightIsPressed() )
 		{
 			foods.emplace_back( std
-				::make_unique<Orange>() );
+				::make_unique<Lime>() );
 		}
 #endif
 		const float dt = ft.Mark() * speedupFactor;

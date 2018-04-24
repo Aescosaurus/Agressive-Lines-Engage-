@@ -156,7 +156,7 @@ void Meatball::Target( const Vec2& target )
 
 void Meatball::Reset( const Vec2& playerPos )
 {
-	*this = Meatball( playerPos );
+	vel = ( pos - playerPos ).GetNormalized();
 }
 
 Pasta::Pasta()
@@ -320,7 +320,7 @@ void Orange::Target( const Vec2& playerPos )
 
 void Orange::Reset( const Vec2& playerPos )
 {
-	*this = Orange();
+	vel = ( pos - playerPos ).GetNormalized();
 }
 
 Orange::Orange( const Vec2& pos,const Vec2& size,float hp )
@@ -369,5 +369,51 @@ void OrangeSlice::EndRoutine( std::vector<DuoVec2>& foodVec )
 
 void OrangeSlice::Reset( const Vec2& playerPos )
 {
-	// Don't reset, it's a fine solution for now. :)
+	vel = ( pos - playerPos ).GetNormalized();
+}
+
+Lime::Lime()
+	:
+	Food( Vec2( rng.NextFloat( -float( Graphics::ScreenWidth ),
+		float( Graphics::ScreenWidth ) ),
+		rng.NextFloat( -float( Graphics::ScreenHeight ),
+			float( Graphics::ScreenHeight ) ) ) * 2.0f,
+		Vec2{ 40.0f,40.0f },15.0f )
+{
+	hitbox.MoveTo( pos - size / 2.0f );
+	while( hitbox.IsContainedBy( Graphics::GetScreenRect() ) )
+	{
+		pos = Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
+			float( Graphics::ScreenWidth ) ),
+			rng.NextFloat( -float( Graphics::ScreenHeight ),
+				float( Graphics::ScreenHeight ) ) } *2.0f;
+
+		hitbox.MoveTo( pos - size / 2.0f );
+	}
+}
+
+Lime::Lime( const Lime& other )
+	:
+	Lime()
+{
+	*this = other;
+}
+
+Lime& Lime::operator=( const Lime& other )
+{
+	pos = other.pos;
+	hitbox = other.hitbox;
+	health = other.health;
+	vel = other.vel;
+	angle = other.angle;
+
+	return( *this );
+}
+
+void Lime::Update( const Vec2& playerPos,float dt )
+{
+}
+
+void Lime::Reset( const Vec2& playerPos )
+{
 }

@@ -339,7 +339,7 @@ void Graphics::PutPixelT( int x,int y,Color c,float alpha )
 	const Color blendedPixel =
 	{
 		unsigned char( ( srcPixel.GetR() * alpha +
-			dstPixel.GetR() * ( 1.0f - alpha ) ) / 2.0f ),
+		dstPixel.GetR() * ( 1.0f - alpha ) ) / 2.0f ),
 		unsigned char( ( srcPixel.GetG() * alpha +
 			dstPixel.GetG() * ( 1.0f - alpha ) ) / 2.0f ),
 		unsigned char( ( srcPixel.GetB() * alpha +
@@ -441,102 +441,62 @@ void Graphics::DrawCircleSafe( int x,int y,int radius,Color c )
 	}
 }
 
-void Graphics::DrawLine( int x0,int y0,int x1,int y1,Color c )
+void Graphics::DrawLine( int x1,int y1,int x2,int y2,Color c )
 {
-	if( !( x0 > 1 && x0 < ScreenWidth - 1 &&
-		x1 > 1 && x1 < ScreenWidth - 1 &&
-		y0 > 1 && y0 < ScreenHeight - 1 &&
-		y1 > 1 && y1 < ScreenHeight - 1 ) )
+	if( !( x1 > 1 && x1 < ScreenWidth - 1 &&
+		x2 > 1 && x2 < ScreenWidth - 1 &&
+		y1 > 1 && y1 < ScreenHeight - 1 &&
+		y2 > 1 && y2 < ScreenHeight - 1 ) )
 	{
 		return;
 	}
-	bool steep = ( abs( y1 - y0 ) > abs( x1 - x0 ) );
+	const float dx = x2 - x1;
+	const float dy = y2 - y1;
 
-	if( steep )
+	if( dy == 0.0f && dx == 0.0f )
 	{
-		std::swap( x0,y0 );
-		std::swap( x1,y1 );
+		PutPixel( int( x1 ),int( y1 ),c );
 	}
-	if( x0 > x1 )
+	else if( abs( dy ) > abs( dx ) )
 	{
-		std::swap( x0,x1 );
-		std::swap( y0,y1 );
-	}
-
-	float dx = float( x1 - x0 );
-	float dy = float( y1 - y0 );
-	float gradient = dy / dx;
-	if( dx == 0.0 )
-	{
-		gradient = 1.0;
-	}
-
-	// handle first endpoint
-	float xend = float( round( x0 ) );
-	float yend = y0 + gradient * ( xend - x0 );
-	float xgap = 1 - x0 + 0.5f - floor( x0 + 0.5f );
-	float xpxl1 = xend; // this will be used in the main loop
-	float ypxl1 = floor( yend );
-	if( steep )
-	{
-		// plot(ypxl1,   xpxl1, rfpart(yend) * xgap)
-		// plot(ypxl1+1, xpxl1,  fpart(yend) * xgap)
-		PutPixel( int( ypxl1 ),int( xpxl1 ),c,float( 1 - yend - floor( yend ) * xgap ) );
-		PutPixel( int( ypxl1 + 1 ),int( xpxl1 ),c,float( yend - floor( yend ) * xgap ) );
-	}
-	else
-	{
-		// plot(xpxl1, ypxl1  , 1 - yend - floor(yend) * xgap)
-		// plot(xpxl1, ypxl1+1,  yend - floor(yend) * xgap)
-		PutPixel( int( xpxl1 ),int( ypxl1 ),c,float( 1 - yend - floor( yend ) * xgap ) );
-		PutPixel( int( xpxl1 ),int( ypxl1 + 1 ),c,float( yend - floor( yend ) * xgap ) );
-	}
-	float intery = yend + gradient; // first y-intersection for the main loop
-
-	// handle second endpoint
-	xend = float( round( x1 ) );
-	yend = y1 + gradient * ( xend - x1 );
-	xgap = x1 + 0.5f - floor( x1 + 0.5f );
-	float xpxl2 = xend; //this will be used in the main loop
-	float ypxl2 = floor( yend );
-	if( steep )
-	{
-		// plot( ypxl2,xpxl2,1 - yend - floor( yend ) * xgap )
-		// plot( ypxl2 + 1,xpxl2,yend - floor( yend ) * xgap )
-		PutPixel( int( ypxl2 ),int( xpxl2 ),c,float( 1 - yend - floor( yend ) * xgap ) );
-		PutPixel( int( ypxl2 + 1 ),int( xpxl2 ),c,float( yend - floor( yend ) * xgap ) );
-	}
-	else
-	{
-		// plot( xpxl2,ypxl2,1 - yend - floor( yend ) * xgap )
-		// plot( xpxl2,ypxl2 + 1,yend - floor( yend ) * xgap )
-		PutPixel( int( xpxl2 ),int( ypxl2 ),c,float( 1 - yend - floor( yend ) * xgap ) );
-		PutPixel( int( xpxl2 ),int( ypxl2 + 1 ),c,float( yend - floor( yend ) * xgap ) );
-	}
-
-	// main loop
-	if( steep )
-	{
-		// for x from xpxl1 + 1 to xpxl2 - 1 do
-		for( int x = int( xpxl1 + 1 ); x < int( xpxl2 - 1 ); ++x )
+		if( dy < 0.0f )
 		{
-			// plot( floor( intery ),x,1 - intery - floor( intery ) )
-			// plot( floor( intery ) + 1,x,intery - floor( intery ) )
-			PutPixel( int( floor( intery ) ),x,c,float( 1 - intery - floor( intery ) ) );
-			PutPixel( int( floor( intery ) + 1 ),x,c,float( intery - floor( intery ) ) );
-			intery = intery + gradient;
+			std::swap( x1,x2 );
+			std::swap( y1,y2 );
+		}
+
+		const float m = dx / dy;
+		float y = y1;
+		int lastIntY;
+		for( float x = x1; y < y2; y += 1.0f,x += m )
+		{
+			lastIntY = int( y );
+			PutPixel( int( x ),lastIntY,c );
+		}
+		if( int( y2 ) > lastIntY )
+		{
+			PutPixel( int( x2 ),int( y2 ),c );
 		}
 	}
 	else
 	{
-		// for x from xpxl1 + 1 to xpxl2 - 1 do
-		for( int x = int( xpxl1 + 1 ); x < int( xpxl2 - 1 ); ++x )
+		if( dx < 0.0f )
 		{
-			// plot( x,floor( intery ),1 - intery - floor( intery ) )
-			// plot( x,floor( intery ) + 1,intery - floor( intery ) )
-			PutPixel( x,int( floor( intery ) ),c,float( 1 - intery - floor( intery ) ) );
-			PutPixel( x,int( floor( intery ) + 1 ),c,float( intery - floor( intery ) ) );
-			intery = intery + gradient;
+			std::swap( x1,x2 );
+			std::swap( y1,y2 );
+		}
+
+		const float m = dy / dx;
+		float x = x1;
+		int lastIntX;
+		for( float y = y1; x < x2; x += 1.0f,y += m )
+		{
+			lastIntX = int( x );
+			PutPixel( lastIntX,int( y ),c );
+		}
+		if( int( x2 ) > lastIntX )
+		{
+			PutPixel( int( x2 ),int( y2 ),c );
 		}
 	}
 }

@@ -33,6 +33,7 @@ public:
 	static Vec2 Down();
 	static Vec2 Left();
 	static Vec2 Right();
+	static Vec2 GetUnit( float angle );
 public:
 	float x;
 	float y;
