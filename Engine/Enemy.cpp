@@ -1,6 +1,8 @@
 #include "Enemy.h"
 #include "META.h"
 
+Random Food::rng = Random();
+
 Food::Food( const Vec2& pos,const Vec2& size,float hp )
 	:
 	pos( pos ),
@@ -22,7 +24,7 @@ void Food::Target( const Vec2& targetPos )
 }
 
 void Food::Damage( float damage,Powerup* pPowerup,
-	Recharger* pRecharger,Random& rng )
+	Recharger* pRecharger )
 {
 	health -= damage;
 
@@ -43,7 +45,7 @@ void Food::Damage( float damage,Powerup* pPowerup,
 	}
 }
 
-void Food::Destroy( Powerup* pPowerup,Random& rng )
+void Food::Destroy( Powerup* pPowerup )
 {
 	health = -1.0f;
 	if( rng.NextInt( 0,100 ) > 85 &&
@@ -74,7 +76,7 @@ Food::operator bool() const
 	return( health > 0.0f );
 }
 
-Meatball::Meatball( Random& rng,const Vec2& playerPos )
+Meatball::Meatball( const Vec2& playerPos )
 	:
 	Food( Vec2( rng.NextFloat( -float( Graphics::ScreenWidth ),
 		float( Graphics::ScreenWidth ) ),
@@ -97,15 +99,15 @@ Meatball::Meatball( Random& rng,const Vec2& playerPos )
 	vel.Normalize();
 }
 
-Meatball::Meatball( const Vec2& pos )
+Meatball::Meatball( const Vec2& pos,const Vec2& size )
 	:
-	Food( pos,Vec2{ 40.0f,40.0f },10.0f )
+	Food( pos,size,10.0f )
 {
 }
 
 Meatball::Meatball( const Meatball& other )
 	:
-	Meatball( pos )
+	Meatball( pos,Vec2{ 40.0f,40.0f } )
 {
 	*this = other;
 }
@@ -122,7 +124,7 @@ Meatball& Meatball::operator=( const Meatball& other )
 	return( *this );
 }
 
-void Meatball::Update( Random& rng,const Vec2& playerPos,float dt )
+void Meatball::Update( const Vec2& playerPos,float dt )
 {
 	pos += vel * speed * dt;
 
@@ -152,7 +154,12 @@ void Meatball::Target( const Vec2& target )
 	}
 }
 
-Pasta::Pasta( Random& rng )
+void Meatball::Reset( const Vec2& playerPos )
+{
+	*this = Meatball( playerPos );
+}
+
+Pasta::Pasta()
 	:
 	Food( Vec2{ rng.NextFloat( -float( Graphics::ScreenWidth ),
 		float( Graphics::ScreenWidth ) ),
@@ -172,7 +179,26 @@ Pasta::Pasta( Random& rng )
 	}
 }
 
-void Pasta::Update( Random& rng,const Vec2& playerPos,float dt )
+Pasta::Pasta( const Pasta& other )
+	:
+	Pasta()
+{
+	*this = other;
+}
+
+Pasta & Pasta::operator=( const Pasta& other )
+{
+	pos = other.pos;
+	hitbox = other.hitbox;
+	health = other.health;
+	vel = other.vel;
+	rotSpeed = other.rotSpeed;
+	shape = other.shape;
+
+	return( *this );
+}
+
+void Pasta::Update( const Vec2& playerPos,float dt )
 {
 	vel = Vec2{ playerPos - pos }.GetNormalized();
 
@@ -194,7 +220,12 @@ void Pasta::Draw( Graphics& gfx ) const
 #endif
 }
 
-Orange::Orange( Random& rng )
+void Pasta::Reset( const Vec2& playerPos )
+{
+	*this = Pasta();
+}
+
+Orange::Orange()
 	:
 	Food( Vec2{ 0.0f,0.0f },Vec2( sc,sc ) * 2.0f,24.0f )
 {
@@ -233,7 +264,25 @@ Orange::Orange( Random& rng )
 	}
 }
 
-void Orange::Update( Random& rng,const Vec2& playerPos,float dt )
+Orange::Orange( const Orange& other )
+	:
+	Orange()
+{
+	*this = other;
+}
+
+Orange & Orange::operator=( const Orange& other )
+{
+	pos = other.pos;
+	hitbox = other.hitbox;
+	health = other.health;
+	vel = other.vel;
+	shape = other.shape;
+
+	return( *this );
+}
+
+void Orange::Update( const Vec2& playerPos,float dt )
 {
 	pos += vel * speed * dt;
 
@@ -269,6 +318,11 @@ void Orange::Target( const Vec2& playerPos )
 	}
 }
 
+void Orange::Reset( const Vec2& playerPos )
+{
+	*this = Orange();
+}
+
 Orange::Orange( const Vec2& pos,const Vec2& size,float hp )
 	:
 	Food( pos,size,hp )
@@ -289,7 +343,7 @@ OrangeSlice::OrangeSlice( const DuoVec2& posAndVel )
 {
 }
 
-void OrangeSlice::Update( Random& rng,const Vec2& playerPos,float dt )
+void OrangeSlice::Update( const Vec2& playerPos,float dt )
 {
 	// Moves slightly faster than big orange.
 	pos += vel * speed * 1.5f * dt;
@@ -311,4 +365,9 @@ void OrangeSlice::Draw( Graphics& gfx ) const
 void OrangeSlice::EndRoutine( std::vector<DuoVec2>& foodVec )
 {
 	// Don't spawn infinitely more oranges!
+}
+
+void OrangeSlice::Reset( const Vec2& playerPos )
+{
+	// Don't reset, it's a fine solution for now. :)
 }

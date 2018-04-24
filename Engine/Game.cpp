@@ -87,7 +87,7 @@ void Game::UpdateModel()
 		if( wnd.mouse.RightIsPressed() )
 		{
 			foods.emplace_back( std
-				::make_unique<Orange>( rng ) );
+				::make_unique<Orange>() );
 		}
 #endif
 		const float dt = ft.Mark() * speedupFactor;
@@ -108,7 +108,7 @@ void Game::UpdateModel()
 
 			e->Target( player.GetPos() );
 
-			e->Update( rng,player.GetPos(),dt );
+			e->Update( player.GetPos(),dt );
 
 			if( player.GetRect()
 				.IsOverlappingWith( e->GetRect() ) )
@@ -118,7 +118,7 @@ void Game::UpdateModel()
 				// Don't get (possibly) infinite health
 				//  by running into enemies and getting
 				//  them to drop health.
-				e->Destroy( pPowerup.get(),rng );
+				e->Destroy( pPowerup.get() );
 				if( player.GetHP() < 1 )
 				{
 					ResetGame();
@@ -126,11 +126,27 @@ void Game::UpdateModel()
 				}
 			}
 
+			{
+				const Rect& sRect = Graphics::GetScreenRect();
+				const Rect& eRect = e->GetRect();
+				if( eRect.IsContainedBy( sRect ) )
+				{
+					for( const std::unique_ptr<Food>& f : foods )
+					{
+						const Rect& fRect = f->GetRect();
+						if( &f != &e && fRect.IsOverlappingWith( eRect ) )
+						{
+							e->Reset( player.GetPos() );
+						}
+					}
+				}
+			}
+
 			if( player <= ( e->GetRect() ) )
 			{
 				e->Damage( player.GetDamage(),
 					pPowerup.get(),
-					pRecharger.get(),rng );
+					pRecharger.get() );
 			}
 
 			if( ( *e ) && Vec2{ e->GetPos() - player.GetPos() }
@@ -230,16 +246,15 @@ void Game::AdvanceLevel()
 	{
 		for( int i = 0; i < dist1; ++i )
 		{
-			foods.emplace_back( std::make_unique<Meatball>( rng,
-				player.GetPos() ) );
+			foods.emplace_back( std::make_unique<Meatball>( player.GetPos() ) );
 		}
 		for( int i = 0; i < dist2; ++i )
 		{
-			foods.emplace_back( std::make_unique<Pasta>( rng ) );
+			foods.emplace_back( std::make_unique<Pasta>() );
 		}
 		for( int i = 0; i < dist3; ++i )
 		{
-			foods.emplace_back( std::make_unique<Orange>( rng ) );
+			foods.emplace_back( std::make_unique<Orange>() );
 		}
 	}
 
