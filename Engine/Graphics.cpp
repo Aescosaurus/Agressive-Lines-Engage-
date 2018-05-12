@@ -450,8 +450,8 @@ void Graphics::DrawLine( int x1,int y1,int x2,int y2,Color c )
 	{
 		return;
 	}
-	const float dx = x2 - x1;
-	const float dy = y2 - y1;
+	const float dx = float( x2 - x1 );
+	const float dy = float( y2 - y1 );
 
 	if( dy == 0.0f && dx == 0.0f )
 	{
@@ -466,9 +466,11 @@ void Graphics::DrawLine( int x1,int y1,int x2,int y2,Color c )
 		}
 
 		const float m = dx / dy;
-		float y = y1;
+		float y = float( y1 );
 		int lastIntY;
-		for( float x = x1; y < y2; y += 1.0f,x += m )
+		for( float x = float( x1 );
+			y < float( y2 );
+			y += 1.0f,x += m )
 		{
 			lastIntY = int( y );
 			PutPixel( int( x ),lastIntY,c );
@@ -487,9 +489,11 @@ void Graphics::DrawLine( int x1,int y1,int x2,int y2,Color c )
 		}
 
 		const float m = dy / dx;
-		float x = x1;
+		float x = float( x1 );
 		int lastIntX;
-		for( float y = y1; x < x2; x += 1.0f,y += m )
+		for( float y = float( y1 );
+			x < float( x2 );
+			x += 1.0f,y += m )
 		{
 			lastIntX = int( x );
 			PutPixel( lastIntX,int( y ),c );

@@ -137,7 +137,7 @@ void Game::UpdateModel()
 						const Rect& fRect = f->GetRect();
 						if( &f != &e && fRect.IsOverlappingWith( eRect ) )
 						{
-							e->Reset( player.GetPos() );
+							// e->Reset( player.GetPos() );
 						}
 					}
 				}
@@ -299,6 +299,7 @@ void Game::ComposeFrame()
 	{
 #if DRAW_RELEASE_STUFF
 		SpriteCodex::DrawTitleScreen( gfx );
+		gfx.DrawRect( 0,380,gfx.ScreenWidth,200,Colors::Black );
 #endif
 }
 	else

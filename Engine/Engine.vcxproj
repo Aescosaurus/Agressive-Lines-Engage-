@@ -153,6 +153,7 @@
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="META.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="NodeManager.h" />
     <ClInclude Include="Poly.h" />
     <ClInclude Include="Powerup.h" />
     <ClInclude Include="Random.h" />

@@ -40,9 +40,9 @@ void Recharger::Draw( Graphics& gfx ) const
 		shape.Draw( gfx );
 		shape.Draw( gfx );
 
-#if !DRAW_RELEASE_STUFF
-		gfx.DrawHitbox( hitbox );
-#endif
+// #if !DRAW_RELEASE_STUFF
+// 		gfx.DrawHitbox( hitbox );
+// #endif
 	}
 }
 

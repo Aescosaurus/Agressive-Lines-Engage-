@@ -97,7 +97,21 @@ void Hero::operator>>( const Vec2& target )
 {
 	if( !powerupActive || pt != PowerupType::FasterFireRate )
 	{
-		if( shotTimer > refireTime )
+		if( pt == PowerupType::TripleShot )
+		{
+			if( shotTimer > refireTime3 )
+			{
+				shotTimer = 0.0f;
+				// Shoot 3 bullets instead of just 1.
+				bullets.emplace_back( Bullet{ pos,Vec2( target - pos )
+					.GetAngle() + 0.0f,shape.GetColor() } );
+				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
+					.GetAngle() + 3.4f,shape.GetColor() } );
+				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
+					.GetAngle() - 3.4f,shape.GetColor() } );
+			}
+		}
+		else if( shotTimer > refireTime )
 		{
 			shotTimer = 0.0f;
 			if( pt == PowerupType::DoubleShot )
@@ -109,16 +123,6 @@ void Hero::operator>>( const Vec2& target )
 				bullets.emplace_back( Bullet{ pos,
 					Vec2( pos - target )
 					.GetAngle() - 3.0f,shape.GetColor() } );
-			}
-			else if( pt == PowerupType::TripleShot )
-			{
-				// Shoot 3 bullets instead of just 1.
-				bullets.emplace_back( Bullet{ pos,Vec2( target - pos )
-					.GetAngle() + 0.0f,shape.GetColor() } );
-				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
-					.GetAngle() + 3.4f,shape.GetColor() } );
-				bullets.emplace_back( Bullet{ pos,Vec2( pos - target )
-					.GetAngle() - 3.4f,shape.GetColor() } );
 			}
 			else
 			{
@@ -209,7 +213,7 @@ void Hero::Draw( Graphics& gfx )
 		shield.MoveBy( Vec2( 1.0f,1.0f ) );
 		shield.DrawTransparent( float( hp ) / float( maxHP ),gfx );
 	}
-	
+
 
 	for( const Bullet& b : bullets )
 	{
@@ -228,7 +232,7 @@ void Hero::PowerUp()
 
 	pt = PowerupType( rng.NextInt( int( PowerupType
 		::FasterFireRate ),int( PowerupType
-		::TripleShot ) ) );
+			::TripleShot ) ) );
 
 	if( pt == PowerupType::FasterFireRate )
 	{

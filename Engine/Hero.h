@@ -75,8 +75,12 @@ public:
 	int GetHP() const;
 	bool IsMaxHP() const;
 private:
+	// Default
 	static constexpr float refireTime = 0.15f;
+	// Faster
 	static constexpr float refireTime2 = refireTime / 2.0f;
+	// Slower
+	static constexpr float refireTime3 = refireTime * 1.5f;
 	static constexpr float powerCooldown = 12.5f;
 	PowerupType pt;
 	float powerdownTimer = 0.0f;
